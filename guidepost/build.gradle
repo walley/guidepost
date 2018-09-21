@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "27.0.3"
+
+    defaultConfig {
+        applicationId "org.walley.guidepost"
+        minSdkVersion 17
+        targetSdkVersion 26
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("/home/walley/src/androidkey/my-release-key.keystore")
+            storePassword "aaaaaa"
+            keyAlias "walley"
+            keyPassword "aaaaaa"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    packagingOptions {
+       exclude 'META-INF/DEPENDENCIES'
+    }
+
+}
+
+dependencies {
+    compile files('libs/commons-io-2.4.jar')
+    compile files('libs/httpclient-4.3.6.jar')
+    compile files('libs/httpcore-4.3.3.jar')
+    compile files('libs/httpmime-4.3.6.jar')
+    compile files('libs/urlimageviewhelper-1.0.4.jar')
+}
