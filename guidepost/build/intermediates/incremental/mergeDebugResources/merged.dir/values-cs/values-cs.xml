@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">Jak na to:\nPro použití musíte sdílet obrázek například z Fotoaparátu nebo Galerie</string>
+    <string name="app_name">guidepost</string>
+    <string name="author">Autor:</string>
+    <string name="bye">Ukončit</string>
+    <string name="cancel">Zrušit</string>
+    <string name="exit">Konec</string>
+    <string name="gpl">Guidepost  Copyright (C) 2013-2015  Michal Grezl \n
+Tento program je svobodný software: můžete jej šířit a upravovat podle ustanovení Obecné veřejné licence GNU (GNU General Public Licence), vydávané Free Software Foundation a to buď podle 3. verze této Licence, nebo (podle vašeho uvážení) kterékoli pozdější verze.
+Tento program je rozšiřován v naději, že bude užitečný, avšak BEZ JAKÉKOLIV ZÁRUKY. Neposkytují se ani odvozené záruky PRODEJNOSTI anebo VHODNOSTI PRO URČITÝ ÚČEL. Další podrobnosti hledejte v Obecné veřejné licenci GNU.
+Kopii Obecné veřejné licence GNU jste měli obdržet spolu s tímto programem. Pokud se tak nestalo, najdete ji zde: http://www.gnu.org/licenses/.
+\n
+\n
+Žebříček:\n
+  http://api.openstreetmap.cz/table/leaderboard
+</string>
+    <string name="lat">lat:</string>
+    <string name="location">Pozice:</string>
+    <string name="lon">lon:</string>
+    <string name="remember">zapamatovat</string>
+    <string name="selectedfile">Vybraný soubor:</string>
+    <string name="send">Poslat</string>
+    <string name="toobig">Soubor je příliš velký, limit je 10MB</string>
+    <string name="tryagain">Zkusit znovu</string>
+    <string name="uploaded">Obrázek byl úspěšně odeslán na server.</string>
+    <string name="uploaderror">Chyba je: </string>
+    <string name="uploadfailed">Přenos selhal</string>
+    <string name="uploading">Posílám obrázek...</string>
+    <string name="wrongcoords">Souřadnice nesmí být 0,0 (uprostřed Atlantiku žádný rozcestník není)</string>
+</resources>

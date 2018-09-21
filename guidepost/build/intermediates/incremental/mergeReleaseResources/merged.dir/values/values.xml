@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">How to use:\nTo use this application, 
+you must use share with ... function from other apps such as camera.
+</string>
+    <string name="app_name">guidepost</string>
+    <string name="author">Author:</string>
+    <string name="bye">Bye</string>
+    <string name="cancel">Cancel</string>
+    <string name="exit">Exit</string>
+    <string name="gpl">Guidepost  Copyright (C) 2013-2015  Michal Grezl \n
+This program comes with ABSOLUTELY NO WARRANTY; for details see license.\n
+This is free software, and you are welcome to redistribute it under certain conditions; see license for details.
+\n
+http://www.gnu.org/licenses/gpl.txt
+\n
+\n
+Leaderboard:\n
+ visit http://api.openstreetmap.cz/table/leaderboard\n
+</string>
+    <string name="lat">lat:</string>
+    <string name="location">Location:</string>
+    <string name="lon">lon:</string>
+    <string name="remember">remember</string>
+    <string name="selectedfile">Selected File :</string>
+    <string name="send">Send</string>
+    <string name="toobig">File if too big, limit is 10MB</string>
+    <string name="tryagain">Try again</string>
+    <string name="uploaded">Picture was uploaded successfully</string>
+    <string name="uploaderror">Upload error: </string>
+    <string name="uploadfailed">Upload failed</string>
+    <string name="uploading">Uploading Picture...</string>
+    <string name="wrongcoords">Coordinates cannot be 0,0 (there is no guidepost in the middle of the ocean!)</string>
+</resources>

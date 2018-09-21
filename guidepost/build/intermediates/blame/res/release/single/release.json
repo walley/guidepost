@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/release/drawable-hdpi_ic_launcher.png.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/release/drawable-mdpi_ic_launcher.png.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/release/drawable_oom.png.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable/oom.png"
+    },
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/release/layout_share.xml.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/layout/share.xml"
+    },
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/release/drawable-ldpi_ic_launcher.png.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable-ldpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/release/raw_web.txt.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/raw/web.txt"
+    },
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/release/layout_main.xml.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/layout/main.xml"
+    },
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/release/drawable_placeholder.png.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable/placeholder.png"
+    }
+]
