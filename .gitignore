@@ -1,0 +1,5 @@
+local.properties
+.git/
+.gradle/
+.idea/
+guidepost/build/
