@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: __local_aars__:/home/walley/StudioProjects/guidepost/guidepost/libs/httpcore-4.3.3.jar:unspecified@jar">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/guidepost/libs/httpcore-4.3.3.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
