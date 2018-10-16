@@ -52,4 +52,5 @@ dependencies {
     implementation files('libs/urlimageviewhelper-1.0.4.jar')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:support-v13:26.1.0'
+    implementation 'com.koushikdutta.ion:ion:2.+'
 }
