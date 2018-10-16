@@ -37,6 +37,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v13.app.ActivityCompat;
+import android.support.v13.app.FragmentCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -70,9 +72,11 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.util.DisplayMetrics;
 
 /*START OF CLASS***************************************************************/
-public class share extends Activity
+public class share extends AppCompatActivity implements FragmentCompat.OnRequestPermissionsResultCallback
 /*START OF CLASS***************************************************************/
 {
+
+  public static final String TAG = "GP-SHARE";
 
   private DefaultHttpClient mHttpClient;
   private Uri uri;
@@ -278,6 +282,7 @@ public class share extends Activity
       }
     });
 
+    /**** map click ****/
     image_map.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
         Log.d("GP","map click");
@@ -288,14 +293,15 @@ public class share extends Activity
           return;
         }//FIXME - permission
 
-        if (gps.canGetLocation()) {
-           double latitude = gps.getLatitude();
-           double longitude = gps.getLongitude();
-           Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-           if (latitude > 0 && longitude > 0) {
-             lat_coord.setText(Double.toString(latitude));
-             lon_coord.setText(Double.toString(longitude));
-           }
+        if (gps.can_get_location()) {
+          gps.get_gps_location();
+          double latitude = gps.getLatitude();
+          double longitude = gps.getLongitude();
+          Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+          if (latitude > 0 && longitude > 0) {
+            lat_coord.setText(Double.toString(latitude));
+            lon_coord.setText(Double.toString(longitude));
+          }
         } else {
           Toast.makeText(getApplicationContext(), "cannot get location", Toast.LENGTH_LONG).show();
            gps.showSettingsAlert();
@@ -330,7 +336,6 @@ public class share extends Activity
             prepare_map();
           }
         });
-
       }
     }
   }
@@ -629,7 +634,29 @@ public class share extends Activity
     .show();
   }
 
-  /*end of class*/
+  @Override
+  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+  {
+
+/*    if (requestCode == REQUEST_CONTACTS) {
+      Log.i(TAG, "Received response for contact permissions request.");
+
+      // We have requested multiple permissions for contacts, so all of them need to be
+      // checked.
+      if (PermissionUtil.verifyPermissions(grantResults)) {
+        // All required permissions have been granted, display contacts fragment.
+      } else {
+        Log.i(TAG, "Contacts permissions were NOT granted.");
+      }
+
+    } else {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+    */
+    Toast.makeText(this, "shit", Toast.LENGTH_LONG).show();
+
+  }
+
 }
 /*end of class*/
 

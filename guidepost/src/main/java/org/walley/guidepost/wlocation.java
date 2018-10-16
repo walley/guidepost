@@ -61,6 +61,7 @@ public class wlocation extends Service implements LocationListener
   {
     is_gps_enabled = false;
     is_network_enabled = false;
+    can_get_location = false;
 
     Log.i("GP", "Seting up location_manager");
 
@@ -70,6 +71,7 @@ public class wlocation extends Service implements LocationListener
       is_gps_enabled = location_manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
       if (is_gps_enabled) {
         Log.i("GP", "GPS Enabled");
+        can_get_location = true;
       } else {
         Log.i("GP", "GPS Disabled");
       }
@@ -80,6 +82,13 @@ public class wlocation extends Service implements LocationListener
 
     if (!is_gps_enabled) {
       is_network_enabled = location_manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+      if (is_network_enabled) {
+        Log.i("GP", "GPS Enabled");
+        can_get_location = true;
+      } else {
+        Log.i("GP", "GPS Disabled");
+
+      }
     }
   }
 
@@ -116,8 +125,11 @@ public class wlocation extends Service implements LocationListener
           if (location_manager != null) {
             location = location_manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (location != null) {
+              Log.i("GP", "get_gps_location(): "+location.getLatitude());
               latitude = location.getLatitude();
               longitude = location.getLongitude();
+            } else {
+              Log.i("GP", "get_gps_location(): location is null");
             }
           }
         } catch (SecurityException e) {
@@ -169,7 +181,9 @@ public class wlocation extends Service implements LocationListener
    * Function to check GPS/wifi enabled
    * @return boolean
    * */
-  public boolean canGetLocation()
+/****************************************************************************/
+  public boolean can_get_location()
+/****************************************************************************/
   {
     return this.can_get_location;
   }
