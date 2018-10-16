@@ -1,7 +1,7 @@
 /*
-Copyright 2013-2016 Michal Grezl
+Copyright 2013-2018 Michal Grézl
 
-This file is part of Guidepost.
+This file is part of Guidepost android app.
 
 Guidepost is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,18 +37,13 @@ public class wlocation extends Service implements LocationListener
 
   private final Context mContext;
 
-  // flag for GPS status
-  boolean isGPSEnabled = false;
-
-  // flag for network status
-  boolean isNetworkEnabled = false;
-
-  // flag for GPS status
-  boolean canGetLocation = false;
-
-  Location location; // location
-  double latitude; // latitude
-  double longitude; // longitude
+  boolean is_gps_enabled = false;
+  boolean is_network_enabled = false;
+  boolean can_get_location = false;
+  Location location;
+  double latitude;
+  double longitude;
+  private LocationManager location_manager;
 
   // The minimum distance to change Updates in meters
   private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1;
@@ -56,109 +51,117 @@ public class wlocation extends Service implements LocationListener
   // The minimum time between updates in milliseconds
   private static final long MIN_TIME_BW_UPDATES = 1000;
 
-  // Declaring a Location Manager
-  protected LocationManager locationManager;
-
   public wlocation(Context context)
   {
     this.mContext = context;
-    getLocation();
+    setup_location();
   }
 
-  public Location getLocation()
+  public void setup_location()
   {
+    is_gps_enabled = false;
+    is_network_enabled = false;
+
+    Log.i("GP", "Seting up location_manager");
+
+    location_manager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+
     try {
-      locationManager = (LocationManager) mContext
-                        .getSystemService(LOCATION_SERVICE);
-
-      // getting GPS status
-      isGPSEnabled = locationManager
-                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-      // getting network status - we do not want this
-      //isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-      if (!isGPSEnabled && !isNetworkEnabled) {
-        // no network provider is enabled
+      is_gps_enabled = location_manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+      if (is_gps_enabled) {
+        Log.i("GP", "GPS Enabled");
       } else {
-        this.canGetLocation = true;
-        // First get location from Network Provider
-        if (isNetworkEnabled) {
-          locationManager.requestLocationUpdates(
-            LocationManager.NETWORK_PROVIDER,
-            MIN_TIME_BW_UPDATES,
-            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-          Log.d("Network", "Network");
-          if (locationManager != null) {
-            location = locationManager
-                       .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Log.i("GP", "GPS Disabled");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      Log.e("GP", "GPS state cannot be determined " + e.toString());
+    }
+
+    if (!is_gps_enabled) {
+      is_network_enabled = location_manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+  }
+
+/****************************************************************************/
+  public boolean get_network_location()
+/****************************************************************************/
+  {
+    location = null;
+
+    if (is_network_enabled) {
+      location_manager.requestLocationUpdates(
+        LocationManager.NETWORK_PROVIDER,
+        MIN_TIME_BW_UPDATES,
+        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+      Log.i("GP", "Network location");
+      if (location_manager != null) {
+        location = location_manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
+/****************************************************************************/
+  public void get_gps_location()
+/****************************************************************************/
+  {
+    location = null;
+
+    if (is_gps_enabled) {
+      if (location == null) {
+        try {
+          if (location_manager != null) {
+            location = location_manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (location != null) {
               latitude = location.getLatitude();
               longitude = location.getLongitude();
             }
           }
-        }
-        // if GPS Enabled get lat/long using GPS Services
-        if (isGPSEnabled) {
-          if (location == null) {
-            locationManager.requestLocationUpdates(
-              LocationManager.GPS_PROVIDER,
-              MIN_TIME_BW_UPDATES,
-              MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-              Log.d("GPS Enabled", "GPS Enabled");
-            if (locationManager != null) {
-              location = locationManager
-                         .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-              if (location != null) {
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-              }
-            }
-          }
+        } catch (SecurityException e) {
+          e.printStackTrace();
+          Log.e("GP", "getlocation(): gps permission error");
+          return;
         }
       }
-
-    } catch (Exception e) {
-      e.printStackTrace();
     }
-
-    return location;
   }
+
 
   /**
    * Stop using GPS listener
    * Calling this function will stop using GPS in your app
    * */
+/****************************************************************************/
   public void stopUsingGPS()
+/****************************************************************************/
   {
-    if(locationManager != null) {
-      locationManager.removeUpdates(wlocation.this);
+    if(location_manager != null) {
+      location_manager.removeUpdates(wlocation.this);
     }
   }
 
-  /**
-   * Function to get latitude
-   * */
+/****************************************************************************/
   public double getLatitude()
+/****************************************************************************/
   {
     if(location != null) {
       latitude = location.getLatitude();
     }
 
-    // return latitude
     return latitude;
   }
 
-  /**
-   * Function to get longitude
-   * */
+/****************************************************************************/
   public double getLongitude()
+/****************************************************************************/
   {
     if(location != null) {
       longitude = location.getLongitude();
     }
 
-    // return longitude
     return longitude;
   }
 
@@ -168,7 +171,7 @@ public class wlocation extends Service implements LocationListener
    * */
   public boolean canGetLocation()
   {
-    return this.canGetLocation;
+    return this.can_get_location;
   }
 
   /**

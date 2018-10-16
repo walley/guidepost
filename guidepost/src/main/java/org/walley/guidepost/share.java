@@ -1,7 +1,7 @@
 /*
-Copyright 2013-2016 Michal Grezl
+Copyright 2013-2018 Michal Grézl
 
-This file is part of Guidepost.
+This file is part of Guidepost android app.
 
 Guidepost is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,13 +19,14 @@ along with Guidepost.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.walley.guidepost;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -35,6 +36,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v13.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,48 +46,28 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpService;
 import org.apache.http.util.EntityUtils;
 
 import org.walley.guidepost.cme.ProgressListener;
 import android.app.AlertDialog;
 import android.graphics.BitmapFactory;
-import android.content.res.Resources;
 import android.content.res.AssetFileDescriptor;
 import java.io.FileNotFoundException;
-import com.koushikdutta.urlimageviewhelper.UrlImageViewCallback;
+
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.util.DisplayMetrics;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 
 /*START OF CLASS***************************************************************/
 public class share extends Activity
@@ -258,7 +240,7 @@ public class share extends Activity
 
     gps = new wlocation(share.this);
 
-    if (!gps.isNetworkEnabled) {
+    if (!gps.is_gps_enabled) {
       Toast.makeText(this, "GPS Disabled", Toast.LENGTH_LONG).show();
     }
 
@@ -299,7 +281,12 @@ public class share extends Activity
     image_map.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
         Log.d("GP","map click");
-        gps = new wlocation(share.this);
+
+        if (ActivityCompat.checkSelfPermission(share.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(share.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+          Log.i("GP", "Permission");
+          return;
+        }//FIXME - permission
 
         if (gps.canGetLocation()) {
            double latitude = gps.getLatitude();
@@ -310,9 +297,7 @@ public class share extends Activity
              lon_coord.setText(Double.toString(longitude));
            }
         } else {
-           // can't get location
-           // GPS or Network is not enabled
-           // Ask user to enable GPS/network in settings
+          Toast.makeText(getApplicationContext(), "cannot get location", Toast.LENGTH_LONG).show();
            gps.showSettingsAlert();
         }
       }
@@ -345,7 +330,6 @@ public class share extends Activity
             prepare_map();
           }
         });
-
 
       }
     }
@@ -532,7 +516,7 @@ public class share extends Activity
         httpContext = new BasicHttpContext();
         HttpEntity entity = null;
 
-        String serverPath = "http://oldapi.openstreetmap.cz/guidepost.php";
+        String serverPath = "http://api.openstreetmap.social/php/guidepost.php";
         post_request = new HttpPost(serverPath);
 
         cme multipart_content = new cme(
