@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Mon Oct 15 15:49:00 CEST 2018
+#Thu Oct 18 11:54:46 CEST 2018
 0.baseType=DIRECTORY
 0.base=/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/transforms/dexMerger/release/0
 0.path=classes.dex

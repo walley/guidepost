@@ -71,6 +71,8 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.util.DisplayMetrics;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 /*START OF CLASS***************************************************************/
 public class share extends AppCompatActivity implements FragmentCompat.OnRequestPermissionsResultCallback
 /*START OF CLASS***************************************************************/
@@ -287,11 +289,11 @@ public class share extends AppCompatActivity implements FragmentCompat.OnRequest
       public void onClick(View v) {
         Log.d("GP","map click");
 
-        if (ActivityCompat.checkSelfPermission(share.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-          ActivityCompat.requestPermissions(share.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        if (ActivityCompat.checkSelfPermission(share.this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(share.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1337);
           Log.i("GP", "Permission");
           return;
-        }//FIXME - permission
+        }
 
         if (gps.can_get_location()) {
           gps.get_gps_location();
@@ -340,9 +342,30 @@ public class share extends AppCompatActivity implements FragmentCompat.OnRequest
     }
   }
 
-  /******************************************************************************/
+/******************************************************************************/
+  protected void onStop()
+/******************************************************************************/
+  {
+    super.onStop();
+    gps.stop_using_gps();
+  }
+
+  public void set_image_location()
+  {
+    gps.get_gps_location();
+    double latitude = gps.getLatitude();
+    double longitude = gps.getLongitude();
+    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+    if (latitude > 0 && longitude > 0) {
+      lat_coord.setText(Double.toString(latitude));
+      lon_coord.setText(Double.toString(longitude));
+    }
+
+  }
+
+/******************************************************************************/
   public void get_exif_data(Uri uri)
-  /******************************************************************************/
+/******************************************************************************/
   {
     float[] output = new float[2];
     String model;
@@ -635,26 +658,28 @@ public class share extends AppCompatActivity implements FragmentCompat.OnRequest
   }
 
   @Override
-  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+  public void onRequestPermissionsResult(int request, String permissions[], int[] results)
   {
-
-/*    if (requestCode == REQUEST_CONTACTS) {
+//PERMISSION_GRANTED Constant Value: 0 (0x00000000)
+//PERMISSION_DENIED Constant Value: -1 (0xffffffff)
+    Log.e(TAG,"request:"+request);
+    if (request == 1337) {
       Log.i(TAG, "Received response for contact permissions request.");
-
-      // We have requested multiple permissions for contacts, so all of them need to be
-      // checked.
-      if (PermissionUtil.verifyPermissions(grantResults)) {
-        // All required permissions have been granted, display contacts fragment.
-      } else {
-        Log.i(TAG, "Contacts permissions were NOT granted.");
+      Log.i(TAG, "l:" + permissions.length);
+      for(int i = 0; i < permissions.length; i++) {
+        Log.i(TAG, "perm,res:" + permissions[i] + results[i]);
+        switch (permissions[i]){
+          case "android.permission.ACCESS_FINE_LOCATION":
+            if (results[i] == PERMISSION_GRANTED) {set_image_location();}
+          break;
+          default:
+          break;
+        }
       }
-
     } else {
-      super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+      Log.e("GP","not our request?");
+      super.onRequestPermissionsResult(request, permissions, results);
     }
-    */
-    Toast.makeText(this, "shit", Toast.LENGTH_LONG).show();
-
   }
 
 }

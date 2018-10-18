@@ -147,7 +147,7 @@ public class wlocation extends Service implements LocationListener
    * Calling this function will stop using GPS in your app
    * */
 /****************************************************************************/
-  public void stopUsingGPS()
+  public void stop_using_gps()
 /****************************************************************************/
   {
     if(location_manager != null) {

@@ -54,7 +54,9 @@ dependencies {
     implementation files('libs/httpcore-4.3.3.jar')
     implementation files('libs/httpmime-4.3.6.jar')
     implementation files('libs/urlimageviewhelper-1.0.4.jar')
+    implementation files('libs/osmbonuspack_6.5.2.aar')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:support-v13:26.1.0'
     implementation 'com.koushikdutta.ion:ion:2.+'
+    implementation 'org.osmdroid:osmdroid-android:6.0.2'
 }

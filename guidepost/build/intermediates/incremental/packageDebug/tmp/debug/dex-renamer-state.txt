@@ -1,4 +1,4 @@
-#Tue Oct 16 13:30:37 CEST 2018
+#Thu Oct 18 11:54:38 CEST 2018
 base.0=/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/transforms/dexMerger/debug/0
 path.0=classes.dex
 renamed.0=classes.dex
