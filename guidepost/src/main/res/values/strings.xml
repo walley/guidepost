@@ -7,7 +7,7 @@
   <string name="author">Author:</string>
   <string name="cancel">Cancel</string>
   <string name="send">Send</string>
-<string name="gpl">Guidepost  Copyright (C) 2013-2015  Michal Grezl \n
+  <string name="gpl">Guidepost  Copyright (C) 2013-2015  Michal Grezl \n
 This program comes with ABSOLUTELY NO WARRANTY; for details see license.\n
 This is free software, and you are welcome to redistribute it under certain conditions; see license for details.
 \n
@@ -33,4 +33,15 @@ you must use share with ... function from other apps such as camera.
   <string name="lat">lat:</string>
   <string name="lon">lon:</string>
   <string name="toobig">File if too big, limit is 10MB</string>
+  <string name="title_activity_basic">basic</string>
+  <string name="title_section1">Section 1</string>
+  <string name="title_section2">Section 2</string>
+  <string name="title_section3">Section 3</string>
+
+  <string name="navigation_drawer_open">Open navigation drawer</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+
+  <string name="action_example">Example action</string>
+
+  <string name="action_settings">Settings</string>
 </resources>

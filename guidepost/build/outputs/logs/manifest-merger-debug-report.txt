@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-38:12
-INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-38:12
-INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-38:12
-INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-38:12
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-43:12
+INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-43:12
+INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-43:12
+INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-43:12
 MERGED from [osmbonuspack_6.5.2.aar] /home/walley/.gradle/caches/transforms-1/files-1.1/osmbonuspack_6.5.2.aar/f3b0abbd1f578aa0c9b04caf80590def/AndroidManifest.xml:2:1-13:12
 MERGED from [com.android.support:appcompat-v7:26.1.0] /home/walley/.gradle/caches/transforms-1/files-1.1/appcompat-v7-26.1.0.aar/367183936e06915a9a0d3e2f0a91dacc/AndroidManifest.xml:17:1-31:12
 MERGED from [com.android.support:support-v13:26.1.0] /home/walley/.gradle/caches/transforms-1/files-1.1/support-v13-26.1.0.aar/e6bc2a84b092cdc1a2bf07e6e1b49850/AndroidManifest.xml:17:1-31:12
@@ -19,25 +19,25 @@ MERGED from [com.android.support:support-core-ui:26.1.0] /home/walley/.gradle/ca
 MERGED from [com.android.support:support-compat:26.1.0] /home/walley/.gradle/caches/transforms-1/files-1.1/support-compat-26.1.0.aar/69f8c365bddb0d58d21c6f9283906cb9/AndroidManifest.xml:17:1-31:12
 MERGED from [com.koushikdutta.async:androidasync:2.2.1] /home/walley/.gradle/caches/transforms-1/files-1.1/androidasync-2.2.1.aar/a5b4640086745088b430f4e2ec879aa8/AndroidManifest.xml:2:1-16:12
 MERGED from [android.arch.lifecycle:runtime:1.0.0] /home/walley/.gradle/caches/transforms-1/files-1.1/runtime-1.0.0.aar/39e1d4ff14094fced0302374c3f63d4f/AndroidManifest.xml:17:1-30:12
-INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-38:12
-INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-38:12
-INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-38:12
+INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-43:12
+INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-43:12
+INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:1-43:12
 	package
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:3:7-37
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:11-41
 		INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml
 		INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml
 	android:versionName
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:5:7-33
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:5:11-37
 		INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml
 		INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml
 	xmlns:android
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:2:11-69
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:3:11-69
 	android:versionCode
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:4:7-31
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:4:11-35
 		INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml
 		INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml
 uses-feature#android.hardware.location.gps
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:7:3-64
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:7:3-63
 MERGED from [org.osmdroid:osmdroid-android:6.0.2] /home/walley/.gradle/caches/transforms-1/files-1.1/osmdroid-android-6.0.2.aar/a55fdd5e5de97f7f547ba67a649d2c83/AndroidManifest.xml:19:5-21:36
 MERGED from [org.osmdroid:osmdroid-android:6.0.2] /home/walley/.gradle/caches/transforms-1/files-1.1/osmdroid-android-6.0.2.aar/a55fdd5e5de97f7f547ba67a649d2c83/AndroidManifest.xml:19:5-21:36
 	android:name
@@ -51,23 +51,23 @@ MERGED from [com.koushikdutta.async:androidasync:2.2.1] /home/walley/.gradle/cac
 	android:name
 		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:9:20-62
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:10:3-78
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:10:3-77
 	android:name
 		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:10:20-75
 uses-permission#android.permission.ACCESS_FINE_LOCATION
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:11:3-77
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:11:3-76
 	android:name
 		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:11:20-74
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:12:3-78
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:12:3-76
 	android:name
 		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:12:20-74
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:13:3-79
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:13:3-78
 	android:name
 		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:13:20-76
 application
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:15:3-34:17
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:15:3-41:17
 MERGED from [osmbonuspack_6.5.2.aar] /home/walley/.gradle/caches/transforms-1/files-1.1/osmbonuspack_6.5.2.aar/f3b0abbd1f578aa0c9b04caf80590def/AndroidManifest.xml:11:5-20
 MERGED from [osmbonuspack_6.5.2.aar] /home/walley/.gradle/caches/transforms-1/files-1.1/osmbonuspack_6.5.2.aar/f3b0abbd1f578aa0c9b04caf80590def/AndroidManifest.xml:11:5-20
 MERGED from [com.android.support:appcompat-v7:26.1.0] /home/walley/.gradle/caches/transforms-1/files-1.1/appcompat-v7-26.1.0.aar/367183936e06915a9a0d3e2f0a91dacc/AndroidManifest.xml:25:5-29:19
@@ -97,45 +97,51 @@ MERGED from [com.koushikdutta.async:androidasync:2.2.1] /home/walley/.gradle/cac
 MERGED from [android.arch.lifecycle:runtime:1.0.0] /home/walley/.gradle/caches/transforms-1/files-1.1/runtime-1.0.0.aar/39e1d4ff14094fced0302374c3f63d4f/AndroidManifest.xml:24:5-28:19
 MERGED from [android.arch.lifecycle:runtime:1.0.0] /home/walley/.gradle/caches/transforms-1/files-1.1/runtime-1.0.0.aar/39e1d4ff14094fced0302374c3f63d4f/AndroidManifest.xml:24:5-28:19
 	android:label
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:16:5-37
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:17:5-37
 	android:icon
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:17:5-41
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:16:5-41
 	android:theme
 		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:18:5-43
 activity#org.walley.guidepost.guidepost
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:20:5-25:16
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:19:5-27:16
 	android:label
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:20:40-72
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:21:7-39
 	android:name
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:20:15-39
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:20:7-32
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:21:7-24:23
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:22:7-26:23
 action#android.intent.action.MAIN
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:22:9-61
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:23:9-60
 	android:name
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:22:17-58
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:23:17-58
 category#android.intent.category.LAUNCHER
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:23:9-69
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:25:9-68
 	android:name
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:23:19-66
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:25:19-66
 activity#org.walley.guidepost.share
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:27:5-33:16
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:28:5-36:16
 	android:name
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:27:15-35
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:28:15-36
 intent-filter#action:name:android.intent.action.SEND+category:name:android.intent.category.DEFAULT+data:mimeType:*/*
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:28:7-32:23
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:29:7-35:23
 action#android.intent.action.SEND
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:29:9-68
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:30:9-60
 	android:name
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:29:17-58
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:30:17-58
 data
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:30:9-45
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:32:9-39
 	android:mimeType
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:30:15-37
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:32:15-37
 category#android.intent.category.DEFAULT
-ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:31:9-77
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:34:9-67
 	android:name
-		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:31:19-65
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:34:19-65
+activity#org.walley.guidepost.basic
+ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:37:5-40:16
+	android:label
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:39:7-51
+	android:name
+		ADDED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml:38:7-28
 uses-sdk
 INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/walley/StudioProjects/guidepost/guidepost/src/main/AndroidManifest.xml
