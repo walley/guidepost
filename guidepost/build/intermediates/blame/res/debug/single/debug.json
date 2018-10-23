@@ -12,6 +12,10 @@
         "source": "/home/walley/.gradle/caches/transforms-1/files-1.1/appcompat-v7-26.1.0.aar/367183936e06915a9a0d3e2f0a91dacc/res/color/abc_btn_colored_text_material.xml"
     },
     {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/debug/drawable_marker_poi_cluster.png.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable/marker_poi_cluster.png"
+    },
+    {
         "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/debug/drawable-ldrtl-xxhdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
         "source": "/home/walley/.gradle/caches/transforms-1/files-1.1/appcompat-v7-26.1.0.aar/367183936e06915a9a0d3e2f0a91dacc/res/drawable-ldrtl-xxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
     },
@@ -574,6 +578,10 @@
     {
         "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/debug/drawable-mdpi_ic_drawer.png.flat",
         "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable-mdpi/ic_drawer.png"
+    },
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/debug/drawable_guidepost.png.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable/guidepost.png"
     },
     {
         "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/debug/layout_abc_alert_dialog_material.xml.flat",
@@ -1318,6 +1326,10 @@
     {
         "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/debug/drawable-mdpi_drawer_shadow.9.png.flat",
         "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable-mdpi/drawer_shadow.9.png"
+    },
+    {
+        "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/debug/drawable_marked_trail_red.png.flat",
+        "source": "/home/walley/StudioProjects/guidepost/guidepost/src/main/res/drawable/marked_trail_red.png"
     },
     {
         "merged": "/home/walley/StudioProjects/guidepost/guidepost/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_list_focused_holo.9.png.flat",

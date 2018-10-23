@@ -21,11 +21,15 @@ package org.walley.guidepost;
 
 import android.Manifest;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v13.app.ActivityCompat;
 import android.support.v13.app.FragmentCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -38,25 +42,27 @@ import java.util.List;
 
 import android.webkit.WebSettings;
 import android.widget.Toast;
-
 import com.google.gson.JsonArray;
-//import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-
 import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.api.IMapView;
+import org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.LabelledGeoPoint;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlayOptions;
 import org.osmdroid.views.overlay.simplefastpoint.SimplePointTheme;
-
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class guidepost extends AppCompatActivity implements FragmentCompat.OnRequestPermissionsResultCallback
@@ -70,15 +76,16 @@ public class guidepost extends AppCompatActivity implements FragmentCompat.OnReq
   MapView map = null;
   MyLocationNewOverlay location_overlay;
   List<IGeoPoint> points = new ArrayList<>();
+  RadiusMarkerClusterer poiMarkers;
+  GeoPoint startPoint = new GeoPoint(49.8583, 17.2944);
 
-void request_permission()
-{
-  if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1338);
-    Log.i(TAG, "write external storage Permission");
-    return;
+  void request_permission() {
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1338);
+      Log.i(TAG, "write external storage Permission");
+      return;
+    }
   }
-}
 
   /** Called when the activity is first created. */
   @Override public void onCreate(Bundle savedInstanceState)
@@ -127,13 +134,56 @@ void request_permission()
             });
 
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
+      poiMarkers = new RadiusMarkerClusterer(this);
+
+      //GeoPoint startPoint = new GeoPoint(48.13, 17.63);
+
+
+      Drawable clusterIconD = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_poi_cluster, null);
+      Bitmap clusterIcon = ((BitmapDrawable) clusterIconD).getBitmap();
+      poiMarkers.setIcon(clusterIcon);
+      poiMarkers.getTextPaint().setTextSize(12 * getResources().getDisplayMetrics().density);
+      poiMarkers.mAnchorV = Marker.ANCHOR_BOTTOM;
+      poiMarkers.mTextAnchorU = 0.70f;
+      poiMarkers.mTextAnchorV = 0.27f;
+      //end of 11.1
+
+      map.getOverlays().add(poiMarkers);
+      Drawable poiIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.marked_trail_red, null);
+      Marker poiMarker = new Marker(map);
+      poiMarker.setTitle("x");
+      poiMarker.setSnippet("xx");
+      poiMarker.setPosition(startPoint);
+      poiMarker.setIcon(poiIcon);
+      poiMarker.setImage(poiIcon);
+      poiMarkers.add(poiMarker);
+      poiMarkers.add(poiMarker);
+      poiMarkers.add(poiMarker);
+
+
       map.setTileSource(TileSourceFactory.MAPNIK);
       map.setBuiltInZoomControls(true);
       map.setMultiTouchControls(true);
 
+      map.addMapListener(new MapListener() {
+        @Override
+        public boolean onScroll(ScrollEvent event) {
+          Log.i(IMapView.LOGTAG, System.currentTimeMillis() + " onScroll " + event.getX() + "," +event.getY());
+          //Toast.makeText(getActivity(), "onScroll", Toast.LENGTH_SHORT).show();
+          //updateInfo();
+          return true;
+        }
+
+        @Override
+        public boolean onZoom(ZoomEvent event) {
+          Log.i(IMapView.LOGTAG, System.currentTimeMillis() + " onZoom " + event.getZoomLevel());
+          updateInfo();
+          return true;
+        }
+      });
+
       IMapController mapController = map.getController();
       mapController.setZoom(14);
-      GeoPoint startPoint = new GeoPoint(49.8583, 17.2944);
       mapController.setCenter(startPoint);
 
       location_overlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), map);
@@ -243,5 +293,12 @@ void request_permission()
       Log.e("GP","not our request?");
       super.onRequestPermissionsResult(request, permissions, results);
     }
+  }
+
+  private void updateInfo(){
+    IGeoPoint mapCenter = map.getMapCenter();
+    Toast.makeText(context,
+    mapCenter.getLatitude()+","+ mapCenter.getLongitude()+",zoom="+map.getZoomLevelDouble(),
+    Toast.LENGTH_SHORT).show();
   }
 }
