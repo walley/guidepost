@@ -27,8 +27,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v13.app.ActivityCompat;
-import android.support.v13.app.FragmentCompat;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -44,15 +43,19 @@ import android.webkit.WebSettings;
 import android.widget.Toast;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.koushikdutta.async.future.Cancellable;
+import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapView;
 import org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer;
+import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.views.MapView;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.util.GeoPoint;
@@ -65,7 +68,7 @@ import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlayOptions;
 import org.osmdroid.views.overlay.simplefastpoint.SimplePointTheme;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-public class guidepost extends AppCompatActivity implements FragmentCompat.OnRequestPermissionsResultCallback
+public class guidepost extends AppCompatActivity
 {
 
   public static final String TAG = "GP";
@@ -76,8 +79,11 @@ public class guidepost extends AppCompatActivity implements FragmentCompat.OnReq
   MapView map = null;
   MyLocationNewOverlay location_overlay;
   List<IGeoPoint> points = new ArrayList<>();
-  RadiusMarkerClusterer poiMarkers;
+  RadiusMarkerClusterer gp_marker_cluster;
   GeoPoint startPoint = new GeoPoint(49.8583, 17.2944);
+  Drawable poiIcon;
+  int gp_overlay_number;
+  Bitmap clusterIcon;
 
   void request_permission() {
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
@@ -95,6 +101,12 @@ public class guidepost extends AppCompatActivity implements FragmentCompat.OnReq
     setContentView(R.layout.main);
     request_permission();
 
+    Ion.getDefault(context).configure().setLogging(TAG, Log.INFO);
+
+    Drawable clusterIconD = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_poi_cluster, null);
+    poiIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.marked_trail_red, null);
+    clusterIcon = ((BitmapDrawable) clusterIconD).getBitmap();
+
     appexit = (Button) findViewById(R.id.appexit);
     appexit.setOnClickListener(new View.OnClickListener() {
       public void onClick(View v) {
@@ -103,6 +115,26 @@ public class guidepost extends AppCompatActivity implements FragmentCompat.OnReq
     });
 
     map = (MapView) findViewById(R.id.map);
+
+    /** Fire if there is more than 200 millisecs no zoom/scroll update markers */
+
+    // If there is more than 200 millisecs no zoom/scroll update markers
+    map.addMapListener(new DelayedMapListener(new MapListener() {
+      @Override
+      public boolean onScroll(ScrollEvent event) {
+        Toast.makeText(context, "after " + map.getOverlays().size(), Toast.LENGTH_SHORT).show();
+        reload_guideposts();
+        return false;
+      }
+
+      @Override
+      public boolean onZoom(ZoomEvent event) {
+        Toast.makeText(context, "after zoom " + map.getOverlays().size(), Toast.LENGTH_SHORT).show();
+        reload_guideposts();
+        return false;
+      }
+    }, 200));
+
 
     Ion.with(context)
             .load("https://api.openstreetmap.social/table/all?output=json")
@@ -116,50 +148,22 @@ public class guidepost extends AppCompatActivity implements FragmentCompat.OnReq
                 Iterator it = result.iterator();
                 while (it.hasNext()) {
                   JsonElement element = (JsonElement) it.next();
-                  Log.i(TAG, "json" + element.toString());
                   item_json = element.getAsJsonArray();
                   try {
                     int id = item_json.get(0).getAsInt();
                     double lat = item_json.get(1).getAsDouble();
                     double lon = item_json.get(2).getAsDouble();
                     points.add(new LabelledGeoPoint(lat, lon, "gp" + id));
-                    Log.i(TAG, "added "+lat+lon+id);
                   } catch (Exception e) {
                     Log.i(TAG, "exception " + e.toString());
-
                   }
-
                 }
               }
             });
 
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
-      poiMarkers = new RadiusMarkerClusterer(this);
 
-      //GeoPoint startPoint = new GeoPoint(48.13, 17.63);
-
-
-      Drawable clusterIconD = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_poi_cluster, null);
-      Bitmap clusterIcon = ((BitmapDrawable) clusterIconD).getBitmap();
-      poiMarkers.setIcon(clusterIcon);
-      poiMarkers.getTextPaint().setTextSize(12 * getResources().getDisplayMetrics().density);
-      poiMarkers.mAnchorV = Marker.ANCHOR_BOTTOM;
-      poiMarkers.mTextAnchorU = 0.70f;
-      poiMarkers.mTextAnchorV = 0.27f;
-      //end of 11.1
-
-      map.getOverlays().add(poiMarkers);
-      Drawable poiIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.marked_trail_red, null);
-      Marker poiMarker = new Marker(map);
-      poiMarker.setTitle("x");
-      poiMarker.setSnippet("xx");
-      poiMarker.setPosition(startPoint);
-      poiMarker.setIcon(poiIcon);
-      poiMarker.setImage(poiIcon);
-      poiMarkers.add(poiMarker);
-      poiMarkers.add(poiMarker);
-      poiMarkers.add(poiMarker);
-
+      create_gp_cluster_overlay();
 
       map.setTileSource(TileSourceFactory.MAPNIK);
       map.setBuiltInZoomControls(true);
@@ -294,11 +298,122 @@ public class guidepost extends AppCompatActivity implements FragmentCompat.OnReq
       super.onRequestPermissionsResult(request, permissions, results);
     }
   }
+  private void reload_guideposts()
+  {
+    StringBuilder bbox_param = new StringBuilder();
+    BoundingBox bbox = map.getBoundingBox();
+    double minlat = bbox.getActualSouth();
+    double maxlat = bbox.getActualNorth();
+    double minlon = bbox.getLonWest();
+    double maxlon = bbox.getLonEast();
+    bbox_param.append(minlon)
+            .append(",")
+            .append(minlat)
+            .append(",")
+            .append(maxlon)
+            .append(",")
+            .append(maxlat);
 
-  private void updateInfo(){
+    Log.i(TAG, bbox_param.toString());
+
+    Ion.with(context)
+            .load("https://api.openstreetmap.social/table/all?output=json&bbox="+bbox_param.toString())
+            .asJsonArray()
+            .setCallback(new FutureCallback<JsonArray>() {
+              @Override
+              public void onCompleted(Exception exception, JsonArray result) {
+
+                try {
+                  map.getOverlays().remove(gp_overlay_number);
+                } catch (Exception e) {
+                 Log.e(TAG, "canot remove overlay" + e.toString());
+                }
+
+                create_gp_cluster_overlay();
+
+                JsonArray item_json;
+                // do stuff with the result or error
+                Log.i(TAG, "bbox json loaded"+result);
+                Iterator it = result.iterator();
+                while (it.hasNext()) {
+                  JsonElement element = (JsonElement) it.next();
+                  Log.i(TAG, "json");
+                  item_json = element.getAsJsonArray();
+                  try {
+                        int id     = item_json.get(0).getAsInt();
+                    double lat     = item_json.get(1).getAsDouble();
+                    double lon     = item_json.get(2).getAsDouble();
+                    String img     = item_json.get(3).getAsString();
+                    //double lon = item_json.get(4).getAsDouble();
+                    String author  = item_json.get(5).getAsString();
+                    String ref     = item_json.get(6).getAsString();
+                    String note    = item_json.get(7).getAsString();
+                    String license = item_json.get(8).getAsString();
+                    String tags    = item_json.get(9).getAsString();
+
+                    points.add(new LabelledGeoPoint(lat, lon, "gp " + id + " " +ref));
+
+                    GeoPoint poi_loc = new GeoPoint(lat,lon);
+
+                    final Marker gp_marker = new Marker(map);
+                    gp_marker.setTitle("gp: " + id);
+                    gp_marker.setSubDescription(""+img);
+                    gp_marker.setSnippet("img:" + img + "<br>author:" + author+ "<br>ref:" + ref + "<br>tags:" + tags);
+                    gp_marker.setPosition(poi_loc);
+                    gp_marker.setIcon(poiIcon);
+                    //gp_marker.setImage(poiIcon);
+
+
+                    Ion.with(context)
+//                            .load("http://api.openstreetmap.social/p/phpThumb.php?h=150&src=http://api.openstreetmap.social" + img)
+                            .load("http://api.openstreetmap.social/" + img)
+                            .withBitmap()
+                            .asBitmap()
+                            .setCallback(new FutureCallback<Bitmap>() {
+                              @Override
+                              public void onCompleted(Exception exception, Bitmap b) {
+                                Drawable d = new BitmapDrawable(getResources(), b);
+                                gp_marker.setImage(d);
+                              }
+                            });
+
+                    gp_marker_cluster.add(gp_marker);
+
+                    Log.i(TAG, "added "+lat+lon+id);
+                    map.invalidate();
+                  } catch (Exception e) {
+                    Log.i(TAG, "exception " + e.toString());
+
+                  }
+
+                }
+                Log.i(TAG, "json done");
+
+              }
+            });
+
+  }
+
+private void create_gp_cluster_overlay()
+{
+  gp_marker_cluster = new RadiusMarkerClusterer(context);
+  gp_marker_cluster.setIcon(clusterIcon);
+  gp_marker_cluster.getTextPaint().setTextSize(12 * getResources().getDisplayMetrics().density);
+  gp_marker_cluster.mAnchorV = Marker.ANCHOR_BOTTOM;
+  gp_marker_cluster.mTextAnchorU = 0.70f;
+  gp_marker_cluster.mTextAnchorV = 0.27f;
+
+  map.getOverlays().add(gp_marker_cluster);
+  gp_overlay_number = map.getOverlays().size() - 1;
+}
+
+  private void updateInfo()
+  {
+/*    return;
     IGeoPoint mapCenter = map.getMapCenter();
     Toast.makeText(context,
     mapCenter.getLatitude()+","+ mapCenter.getLongitude()+",zoom="+map.getZoomLevelDouble(),
     Toast.LENGTH_SHORT).show();
-  }
+  */}
+
 }

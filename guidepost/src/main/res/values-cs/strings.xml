@@ -14,7 +14,7 @@ Kopii Obecné veřejné licence GNU jste měli obdržet spolu s tímto programem
 \n
 \n
 Žebříček:\n
-  http://api.openstreetmap.cz/table/leaderboard
+  http://api.openstreetmap.social/table/leaderboard
 </string>
   <string name="exit">Konec</string>
   <string name="about">Jak na to:\nPro použití musíte sdílet obrázek například z Fotoaparátu nebo Galerie</string>
@@ -29,4 +29,14 @@ Kopii Obecné veřejné licence GNU jste měli obdržet spolu s tímto programem
   <string name="lat">lat:</string>
   <string name="lon">lon:</string>
   <string name="toobig">Soubor je příliš velký, limit je 10MB</string>
+
+  <string name="title_activity_basic">basic</string>
+  <string name="title_section1">Section 1</string>
+  <string name="title_section2">Section 2</string>
+  <string name="title_section3">Section 3</string>
+  <string name="navigation_drawer_open">Open navigation drawer</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+  <string name="action_example">Example action</string>
+
+
 </resources>

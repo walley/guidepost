@@ -15,7 +15,7 @@ http://www.gnu.org/licenses/gpl.txt
 \n
 \n
 Leaderboard:\n
- visit http://api.openstreetmap.cz/table/leaderboard\n
+ visit http://api.openstreetmap.social/table/leaderboard\n
 </string>
   <string name="exit">Exit</string>
   <string name="about">How to use:\nTo use this application, 
@@ -33,15 +33,21 @@ you must use share with ... function from other apps such as camera.
   <string name="lat">lat:</string>
   <string name="lon">lon:</string>
   <string name="toobig">File if too big, limit is 10MB</string>
+
+
+
+
+  <string name="action_example">Example action</string>
+  <string name="action_settings">Settings</string>
+  <string name="nav_header_desc">Navigation header</string>
+  <string name="nav_header_subtitle">android.studio@android.com</string>
+  <string name="nav_header_title">Android Studio</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+  <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="title_activity_basic">basic</string>
   <string name="title_section1">Section 1</string>
   <string name="title_section2">Section 2</string>
   <string name="title_section3">Section 3</string>
 
-  <string name="navigation_drawer_open">Open navigation drawer</string>
-  <string name="navigation_drawer_close">Close navigation drawer</string>
 
-  <string name="action_example">Example action</string>
-
-  <string name="action_settings">Settings</string>
 </resources>

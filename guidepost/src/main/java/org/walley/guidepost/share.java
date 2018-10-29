@@ -36,8 +36,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v13.app.ActivityCompat;
-import android.support.v13.app.FragmentCompat;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -74,7 +73,7 @@ import android.util.DisplayMetrics;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /*START OF CLASS***************************************************************/
-public class share extends AppCompatActivity implements FragmentCompat.OnRequestPermissionsResultCallback
+public class share extends AppCompatActivity
 /*START OF CLASS***************************************************************/
 {
 
