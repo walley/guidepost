@@ -1,5 +1,5 @@
 /*
-Copyright 2013-2016 Michal Grezl
+Copyright 2013-2018 Michal Grézl
 
 This file is part of Guidepost.
 
@@ -136,7 +136,7 @@ public class guidepost extends AppCompatActivity
     }, 200));
 
 
-    Ion.with(context)
+   /* Ion.with(context)
             .load("https://api.openstreetmap.social/table/all?output=json")
             .asJsonArray()
             .setCallback(new FutureCallback<JsonArray>() {
@@ -160,7 +160,7 @@ public class guidepost extends AppCompatActivity
                 }
               }
             });
-
+*/
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
 
       create_gp_cluster_overlay();
@@ -298,6 +298,7 @@ public class guidepost extends AppCompatActivity
       super.onRequestPermissionsResult(request, permissions, results);
     }
   }
+
   private void reload_guideposts()
   {
     StringBuilder bbox_param = new StringBuilder();
@@ -361,7 +362,7 @@ public class guidepost extends AppCompatActivity
                     gp_marker.setSnippet("img:" + img + "<br>author:" + author+ "<br>ref:" + ref + "<br>tags:" + tags);
                     gp_marker.setPosition(poi_loc);
                     gp_marker.setIcon(poiIcon);
-                    //gp_marker.setImage(poiIcon);
+                    //gp_marker.setImage(d_poi_icon);
 
 
                     Ion.with(context)
