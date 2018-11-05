@@ -78,6 +78,7 @@ public class basic extends AppCompatActivity
 
   static final int REQUEST_IMAGE_CAPTURE = 1;
   public static final String TAG = "GP-B";
+  private static final int RESULT_SETTINGS = 1;
 
   ActionBarDrawerToggle toggle;
   Bitmap b_cluster_icon;
@@ -113,6 +114,20 @@ public class basic extends AppCompatActivity
     }
   }
 
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data)
+  {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    switch (requestCode) {
+    case RESULT_SETTINGS:
+  //    validate_settings();
+  //    showUserSettings();
+      break;
+    }
+
+  }
+
 
   @Override
   public void onBackPressed() {
@@ -140,7 +155,9 @@ public class basic extends AppCompatActivity
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_settings) {
-      return true;
+      Intent i_preferences = new Intent();
+      i_preferences.setClass(context, preferences.class);
+      startActivityForResult(i_preferences, RESULT_SETTINGS);
     }
 
     return super.onOptionsItemSelected(item);
@@ -329,7 +346,7 @@ public class basic extends AppCompatActivity
                 try {
                   map.getOverlays().remove(gp_overlay_number);
                 } catch (Exception e) {
-                  Log.e(TAG, "canot remove overlay" + e.toString());
+                  Log.e(TAG, "cannot remove overlay" + e.toString());
                 }
 
                 create_gp_cluster_overlay();
