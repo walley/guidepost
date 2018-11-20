@@ -74,7 +74,8 @@ import java.util.List;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class basic extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener
+{
 
   static final int REQUEST_IMAGE_CAPTURE = 1;
   public static final String TAG = "GP-B";
@@ -94,11 +95,13 @@ public class basic extends AppCompatActivity
   MapView map = null;
   MyLocationNewOverlay location_overlay;
   NavigationView navigationView;
-  RadiusMarkerClusterer gp_marker_cluster;
+  //  RadiusMarkerClusterer gp_marker_cluster;
+  wclusterer gp_marker_cluster;
   Toolbar toolbar;
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  protected void onCreate(Bundle savedInstanceState)
+  {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.basic);
 
@@ -106,9 +109,10 @@ public class basic extends AppCompatActivity
     request_permission();
     create_ui();
 
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
       Toast.makeText(context, "I need WRITE_EXTERNAL_STORAGE, sorry", Toast.LENGTH_SHORT).show();
-    //  finish();
+      //  finish();
     } else {
       create_map();
     }
@@ -120,17 +124,18 @@ public class basic extends AppCompatActivity
     super.onActivityResult(requestCode, resultCode, data);
 
     switch (requestCode) {
-    case RESULT_SETTINGS:
-  //    validate_settings();
-  //    showUserSettings();
-      break;
+      case RESULT_SETTINGS:
+        //    validate_settings();
+        //    showUserSettings();
+        break;
     }
 
   }
 
 
   @Override
-  public void onBackPressed() {
+  public void onBackPressed()
+  {
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     if (drawer.isDrawerOpen(GravityCompat.START)) {
       drawer.closeDrawer(GravityCompat.START);
@@ -140,14 +145,16 @@ public class basic extends AppCompatActivity
   }
 
   @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
+  public boolean onCreateOptionsMenu(Menu menu)
+  {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.main, menu);
     return true;
   }
 
   @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
+  public boolean onOptionsItemSelected(MenuItem item)
+  {
     // Handle action bar item clicks here. The action bar will
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
@@ -165,7 +172,8 @@ public class basic extends AppCompatActivity
 
   @SuppressWarnings("StatementWithEmptyBody")
   @Override
-  public boolean onNavigationItemSelected(MenuItem item) {
+  public boolean onNavigationItemSelected(MenuItem item)
+  {
     // Handle navigation view item clicks here.
     int id = item.getItemId();
 
@@ -188,7 +196,8 @@ public class basic extends AppCompatActivity
   }
 
   @Override
-  public void onRequestPermissionsResult(int request, String permissions[], int[] results) {
+  public void onRequestPermissionsResult(int request, String permissions[], int[] results)
+  {
 //PERMISSION_GRANTED Constant Value: 0 (0x00000000)
 //PERMISSION_DENIED Constant Value: -1 (0xffffffff)
     Log.e(TAG, "request:" + request);
@@ -218,13 +227,15 @@ public class basic extends AppCompatActivity
   }
 
   @Override
-  protected void onStop() {
+  protected void onStop()
+  {
     super.onStop();
 /*      final MapTileProviderBase mapTileProvider = this.mMapView.getTileProvider();
       mapTileProvider.clearTileCache();*/
   }
 
-  public void onResume() {
+  public void onResume()
+  {
     super.onResume();
     //this will refresh the osmdroid configuration on resuming.
     //if you make changes to the configuration, use
@@ -237,7 +248,8 @@ public class basic extends AppCompatActivity
     }
   }
 
-  public void onPause() {
+  public void onPause()
+  {
     super.onPause();
     //this will refresh the osmdroid configuration on resuming.
     //if you make changes to the configuration, use
@@ -250,30 +262,35 @@ public class basic extends AppCompatActivity
     }
   }
 
-
+  /******************************************************************************/
   /******************************************************************************/
   /******************************************************************************/
 
   void request_permission()
   {
-    List <String> permissions = new ArrayList<>();
+    List<String> permissions = new ArrayList<>();
 
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
       permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PERMISSION_GRANTED) {
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.CAMERA) != PERMISSION_GRANTED) {
       permissions.add(android.Manifest.permission.CAMERA);
     }
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
       permissions.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
-    ActivityCompat.requestPermissions(this, permissions.toArray(new String[permissions.size()]), 1337);
+    ActivityCompat.requestPermissions(
+            this, permissions.toArray(new String[permissions.size()]), 1337);
     Log.i(TAG, "Permission request");
     return;
   }
 
-  void request_permissionx() {
+  void request_permissionx()
+  {
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED)
 
@@ -281,16 +298,20 @@ public class basic extends AppCompatActivity
 
       // Permission is not granted
       // Should we show an explanation?
-      if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                                                              Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+      if (ActivityCompat.shouldShowRequestPermissionRationale(
+              this,
+              Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                             )) {
         // Show an explanation to the user *asynchronously* -- don't block
         // this thread waiting for the user's response! After the user
         // sees the explanation, try again to request the permission.
       } else {
         // No explanation needed; request the permission
-        ActivityCompat.requestPermissions(this,
-                                          new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                          1337);
+        ActivityCompat.requestPermissions(
+                this,
+                new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                1337
+                                         );
 
       }
     } else
@@ -300,8 +321,10 @@ public class basic extends AppCompatActivity
     }
   }
 
-  private void create_gp_cluster_overlay() {
-    gp_marker_cluster = new RadiusMarkerClusterer(context);
+  private void create_gp_cluster_overlay()
+  {
+//    gp_marker_cluster = new RadiusMarkerClusterer(context);
+    gp_marker_cluster = new wclusterer(context);
     gp_marker_cluster.setIcon(b_cluster_icon);
     gp_marker_cluster.getTextPaint().setTextSize(12 * getResources().getDisplayMetrics().density);
     gp_marker_cluster.mAnchorV = Marker.ANCHOR_BOTTOM;
@@ -313,7 +336,8 @@ public class basic extends AppCompatActivity
   }
 
 
-  private void reload_guideposts() {
+  private void reload_guideposts()
+  {
     StringBuilder bbox_param = new StringBuilder();
     BoundingBox bbox = map.getBoundingBox();
     double minlat = bbox.getActualSouth();
@@ -333,9 +357,11 @@ public class basic extends AppCompatActivity
     Ion.with(context)
             .load("https://api.openstreetmap.social/table/all?output=json&bbox=" + bbox_param.toString())
             .asJsonArray()
-            .setCallback(new FutureCallback<JsonArray>() {
+            .setCallback(new FutureCallback<JsonArray>()
+            {
               @Override
-              public void onCompleted(Exception ione, JsonArray result) {
+              public void onCompleted(Exception ione, JsonArray result)
+              {
 
                 if (ione != null) {
                   Toast.makeText(context, "ion json Error", Toast.LENGTH_LONG).show();
@@ -360,7 +386,6 @@ public class basic extends AppCompatActivity
                 Iterator it = result.iterator();
                 while (it.hasNext()) {
                   JsonElement element = (JsonElement) it.next();
-                  Log.i(TAG, "json");
                   item_json = element.getAsJsonArray();
                   try {
                     int id = item_json.get(0).getAsInt();
@@ -381,7 +406,8 @@ public class basic extends AppCompatActivity
                     final Marker gp_marker = new Marker(map);
                     gp_marker.setTitle("gp: " + id);
                     gp_marker.setSubDescription("" + img);
-                    gp_marker.setSnippet("img:" + img + "<br>author:" + author + "<br>ref:" + ref + "<br>tags:" + tags);
+                    gp_marker.setSnippet(
+                            "img:" + img + "<br>author:" + author + "<br>ref:" + ref + "<br>tags:" + tags);
                     gp_marker.setPosition(poi_loc);
                     gp_marker.setIcon(d_poi_icon);
                     gp_marker.setImage(d_poi_icon);
@@ -401,7 +427,7 @@ public class basic extends AppCompatActivity
 */
                     gp_marker_cluster.add(gp_marker);
 
-                    Log.i(TAG, "added latlon:" + lat +","+ lon + ":"+id);
+//                    Log.i(TAG, "added latlon:" + lat + "," + lon + ":" + id);
                     map.invalidate();
                   } catch (Exception e) {
                     Log.e(TAG, "exception adding " + e.toString());
@@ -431,9 +457,11 @@ public class basic extends AppCompatActivity
     map.setBuiltInZoomControls(true);
     map.setMultiTouchControls(true);
 
-    map.addMapListener(new DelayedMapListener(new MapListener() {
+    map.addMapListener(new DelayedMapListener(new MapListener()
+    {
       @Override
-      public boolean onScroll(ScrollEvent event) {
+      public boolean onScroll(ScrollEvent event)
+      {
         Log.i(TAG, "onScroll " + event.getX() + "," + event.getY());
         Toast.makeText(context, "after " + map.getOverlays().size(), Toast.LENGTH_SHORT).show();
         reload_guideposts();
@@ -441,23 +469,28 @@ public class basic extends AppCompatActivity
       }
 
       @Override
-      public boolean onZoom(ZoomEvent event) {
+      public boolean onZoom(ZoomEvent event)
+      {
         Log.i(TAG, " onZoom " + event.getZoomLevel());
-        Toast.makeText(context, "after zoom " + map.getOverlays().size(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(
+                context, "after zoom " + map.getOverlays().size(), Toast.LENGTH_SHORT).show();
         reload_guideposts();
         return false;
       }
     }, 200));
 
 
-    map.addMapListener(new MapListener() {
+    map.addMapListener(new MapListener()
+    {
       @Override
-      public boolean onScroll(ScrollEvent event) {
+      public boolean onScroll(ScrollEvent event)
+      {
         return true;
       }
 
       @Override
-      public boolean onZoom(ZoomEvent event) {
+      public boolean onZoom(ZoomEvent event)
+      {
         return true;
       }
     });
@@ -474,10 +507,10 @@ public class basic extends AppCompatActivity
 
     fab = findViewById(R.id.fab);
     fab.setOnClickListener(new View.OnClickListener()
-
     {
       @Override
-      public void onClick(View view) {
+      public void onClick(View view)
+      {
         Snackbar.make(view, "Yo! this will launch camera", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
 
@@ -491,14 +524,17 @@ public class basic extends AppCompatActivity
     drawer = findViewById(R.id.drawer_layout);
 
     toggle = new ActionBarDrawerToggle(
-            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            this, drawer, toolbar, R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+    );
     drawer.addDrawerListener(toggle);
     toggle.syncState();
 
     navigationView = findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 
-    d_cluster_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_poi_cluster, null);
+    d_cluster_icon = ResourcesCompat.getDrawable(
+            getResources(), R.drawable.marker_poi_cluster, null);
     d_poi_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marked_trail_red, null);
     b_cluster_icon = ((BitmapDrawable) d_cluster_icon).getBitmap();
   }
