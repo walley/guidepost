@@ -88,7 +88,7 @@ public class basic extends AppCompatActivity
   Drawable d_poi_icon;
   DrawerLayout drawer;
   FloatingActionButton fab;
-  GeoPoint start_point = new GeoPoint(49.5, 17.0);
+  GeoPoint start_point;
   IMapController map_controller;
   int gp_overlay_number;
   List<IGeoPoint> points = new ArrayList<>();
@@ -115,6 +115,7 @@ public class basic extends AppCompatActivity
       //  finish();
     } else {
       create_map();
+      move_to_default_position();
     }
   }
 
@@ -178,8 +179,7 @@ public class basic extends AppCompatActivity
     int id = item.getItemId();
 
     if (id == R.id.nav_location) {
-      map_controller.zoomTo(14.0);
-      map_controller.setCenter(start_point);
+      move_to_default_position();
     } else if (id == R.id.nav_slideshow) {
 
     } else if (id == R.id.nav_manage) {
@@ -214,6 +214,7 @@ public class basic extends AppCompatActivity
           case "android.permission.WRITE_EXTERNAL_STORAGE":
             if (results[i] == PERMISSION_GRANTED) {
               create_map();
+              move_to_default_position();
             }
             break;
           default:
@@ -444,10 +445,11 @@ public class basic extends AppCompatActivity
 
   private void create_map()
   {
+
+    start_point = new GeoPoint(49.5, 17.0);
+
     map = findViewById(R.id.map);
     map_controller = map.getController();
-    map_controller.zoomTo(14.0);
-    map_controller.setCenter(start_point);
 
     location_overlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), map);
     location_overlay.enableMyLocation();
@@ -479,24 +481,15 @@ public class basic extends AppCompatActivity
       }
     }, 200));
 
-
-    map.addMapListener(new MapListener()
-    {
-      @Override
-      public boolean onScroll(ScrollEvent event)
-      {
-        return true;
-      }
-
-      @Override
-      public boolean onZoom(ZoomEvent event)
-      {
-        return true;
-      }
-    });
-
     create_gp_cluster_overlay();
+  }
 
+  void move_to_default_position()
+  {
+    map_controller.setZoom(13);
+    map_controller.zoomTo(13.0);
+    map_controller.setCenter(start_point);
+    //map_controller.animateTo(start_point);
   }
 
   private void create_ui()
@@ -533,9 +526,8 @@ public class basic extends AppCompatActivity
     navigationView = findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 
-    d_cluster_icon = ResourcesCompat.getDrawable(
-            getResources(), R.drawable.marker_poi_cluster, null);
-    d_poi_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marked_trail_red, null);
+    d_cluster_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_poi_cluster, null);
+    d_poi_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.guidepost, null);
     b_cluster_icon = ((BitmapDrawable) d_cluster_icon).getBitmap();
   }
 }
