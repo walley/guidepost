@@ -102,7 +102,7 @@ public class wclusterer extends MarkerClusterer {
   public Marker buildClusterMarker(StaticCluster cluster, MapView mapView) {
     Marker m = new Marker(mapView);
     m.setPosition(cluster.getPosition());
-    winfowindow wi = new winfowindow(R.layout.bonuspack_bubble,mapView);
+    winfowindow wi = new winfowindow(R.layout.cluster_bubble,mapView);
     m.setInfoWindow(wi);
     m.setAnchor(this.mAnchorU, this.mAnchorV);
     Bitmap finalIcon = Bitmap.createBitmap(this.mClusterIcon.getWidth(), this.mClusterIcon.getHeight(), this.mClusterIcon.getConfig());
