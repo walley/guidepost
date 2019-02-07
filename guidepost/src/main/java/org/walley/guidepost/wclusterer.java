@@ -13,6 +13,8 @@ import android.graphics.Rect;
 import android.graphics.Paint.Align;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.osmdroid.bonuspack.R.drawable;
@@ -25,6 +27,9 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 public class wclusterer extends MarkerClusterer {
+
+  public static final String TAG = "GP-wclusterer";
+
   protected int mMaxClusteringZoomLevel = 17;
   protected int mRadiusInPixels = 100;
   protected double mRadiusInMeters;
@@ -102,7 +107,24 @@ public class wclusterer extends MarkerClusterer {
   public Marker buildClusterMarker(StaticCluster cluster, MapView mapView) {
     Marker m = new Marker(mapView);
     m.setPosition(cluster.getPosition());
+    m.setInfoWindow((MarkerInfoWindow)null);
+    m.setAnchor(this.mAnchorU, this.mAnchorV);
+    Bitmap finalIcon = Bitmap.createBitmap(this.mClusterIcon.getWidth(), this.mClusterIcon.getHeight(), this.mClusterIcon.getConfig());
+    Canvas iconCanvas = new Canvas(finalIcon);
+    iconCanvas.drawBitmap(this.mClusterIcon, 0.0F, 0.0F, (Paint)null);
+    String text = "" + cluster.getSize();
+    int textHeight = (int)(this.mTextPaint.descent() + this.mTextPaint.ascent());
+    iconCanvas.drawText(text, this.mTextAnchorU * (float)finalIcon.getWidth(), this.mTextAnchorV * (float)finalIcon.getHeight() - (float)(textHeight / 2), this.mTextPaint);
+    m.setIcon(new BitmapDrawable(mapView.getContext().getResources(), finalIcon));
+    return m;
+  }
+
+public Marker build_cluster_marker(StaticCluster cluster, MapView mapView, String bubble_text)
+  {
+    Marker m = new Marker(mapView);
+    m.setPosition(cluster.getPosition());
     winfowindow wi = new winfowindow(R.layout.cluster_bubble,mapView);
+    wi.set_text(bubble_text);
     m.setInfoWindow(wi);
     m.setAnchor(this.mAnchorU, this.mAnchorV);
     Bitmap finalIcon = Bitmap.createBitmap(this.mClusterIcon.getWidth(), this.mClusterIcon.getHeight(), this.mClusterIcon.getConfig());
@@ -115,15 +137,23 @@ public class wclusterer extends MarkerClusterer {
     return m;
   }
 
-  public void renderer(ArrayList<StaticCluster> clusters, Canvas canvas, MapView mapView) {
+  public void renderer(ArrayList<StaticCluster> clusters, Canvas canvas, MapView mapView)
+  {
+    String t = "";
     Iterator var4 = clusters.iterator();
-
-    while(var4.hasNext()) {
+    while (var4.hasNext()) {
+      t = "";
       StaticCluster cluster = (StaticCluster)var4.next();
       if (cluster.getSize() == 1) {
         cluster.setMarker(cluster.getItem(0));
       } else {
-        Marker m = this.buildClusterMarker(cluster, mapView);
+
+        for (int i = 0; i < cluster.getSize(); i++) {
+          t += i + " " +cluster.getItem(i).getTitle() + "\n";
+        }
+        Log.i(TAG, "item:" + t);
+
+        Marker m = this.build_cluster_marker(cluster, mapView, t);
         cluster.setMarker(m);
       }
     }

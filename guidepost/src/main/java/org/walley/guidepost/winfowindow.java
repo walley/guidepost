@@ -5,12 +5,16 @@ import android.content.Context;
 import org.osmdroid.api.IMapView;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.OverlayWithIW;
 import org.osmdroid.views.overlay.infowindow.BasicInfoWindow;
 
 import android.graphics.drawable.Drawable;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -35,6 +39,8 @@ import android.widget.Toast;
 public class winfowindow extends BasicInfoWindow
 {
 
+  public static final String TAG = "GP-winfowindow";
+
   protected Marker mMarkerRef; //reference to the Marker on which it is opened. Null if none.
 
   /**
@@ -42,11 +48,12 @@ public class winfowindow extends BasicInfoWindow
    *                    bubble_subdescription, bubble_image
    * @param mapView
    */
+
   public winfowindow(int layoutResId, MapView mapView)
   {
     super(layoutResId, mapView);
     //mMarkerRef = null;
-    Log.w("GP", "marker contructor");
+    Log.d("GP", "winfowindow contructor");
   }
 
   /**
@@ -63,7 +70,15 @@ public class winfowindow extends BasicInfoWindow
   public void onOpen(Object item)
   {
 
-    super.onOpen(item);
+    //super.onOpen(item);
+    OverlayWithIW overlay = (OverlayWithIW) item;
+    String title = overlay.getTitle();
+    if (title == null)
+      title = "";
+    if (mView == null) {
+      Log.w(IMapView.LOGTAG, "Error trapped, BasicInfoWindow.open, mView is null!");
+      return;
+    }
 
     Log.w("GP", "marker onopen");
 
@@ -81,6 +96,18 @@ public class winfowindow extends BasicInfoWindow
       imageView.setVisibility(View.VISIBLE);
     } else
       imageView.setVisibility(View.GONE);
+  }
+
+  public void set_text(String t)
+  {
+    TextView temp = ((TextView) mView.findViewById(R.id.cluster_bubble_text));
+    if (temp != null) {
+      temp.setText(t);
+      Log.i(TAG, "settext:" + t);
+
+    } else {
+      Log.e(TAG, "settext: textview is null");
+    }
   }
 
   @Override

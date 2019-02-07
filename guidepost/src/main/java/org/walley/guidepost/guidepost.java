@@ -122,14 +122,14 @@ public class guidepost extends AppCompatActivity
     map.addMapListener(new DelayedMapListener(new MapListener() {
       @Override
       public boolean onScroll(ScrollEvent event) {
-        Toast.makeText(context, "after " + map.getOverlays().size(), Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onscroll overlays: " + map.getOverlays().size());
         reload_guideposts();
         return false;
       }
 
       @Override
       public boolean onZoom(ZoomEvent event) {
-        Toast.makeText(context, "after zoom " + map.getOverlays().size(), Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onzoom overlays:" + map.getOverlays().size());
         reload_guideposts();
         return false;
       }
@@ -414,7 +414,7 @@ private void create_gp_cluster_overlay()
     IGeoPoint mapCenter = map.getMapCenter();
     Toast.makeText(context,
     mapCenter.getLatitude()+","+ mapCenter.getLongitude()+",zoom="+map.getZoomLevelDouble(),
-    Toast.LENGTH_SHORT).show();
+    Toast.LENGTH_SHORT).sho();
   */}
 
 }
