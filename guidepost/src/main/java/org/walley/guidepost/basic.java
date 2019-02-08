@@ -405,10 +405,17 @@ public class basic extends AppCompatActivity
                     GeoPoint poi_loc = new GeoPoint(lat, lon);
 
                     final Marker gp_marker = new Marker(map);
-                    gp_marker.setTitle("gp: " + id);
-                    gp_marker.setSubDescription("" + img);
-                    gp_marker.setSnippet(
-                            "img:" + img + "<br>author:" + author + "<br>ref:" + ref + "<br>tags:" + tags);
+                    gp_marker.setTitle("" + id);
+                    //gp_marker.setSubDescription("" + img);
+
+                    String snippet = "";
+                    snippet += "<h1>Guidepost " + id +"</h1>";
+                    snippet += "img:" + img + "<a href='" + img + "'>" + img + "</a>";
+                    snippet += "<br>author:" + author;
+                    snippet += "<br>ref:" + ref;
+                    snippet += "<h2>tags:</h2><br>" + tags;
+
+                    gp_marker.setSnippet(snippet);
                     gp_marker.setPosition(poi_loc);
                     gp_marker.setIcon(d_poi_icon);
                     gp_marker.setImage(d_poi_icon);

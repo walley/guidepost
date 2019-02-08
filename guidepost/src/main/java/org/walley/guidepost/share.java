@@ -180,6 +180,7 @@ public class share extends AppCompatActivity
   public void place_map(int map_width, int map_height)
   /******************************************************************************/
   {
+    /* this need referrer:(
     String mapic_url = "http://staticmap.openstreetmap.de/staticmap.php?center="
                        + lat_coord.getText()
                        + ","
@@ -191,6 +192,20 @@ public class share extends AppCompatActivity
                        + ","
                        + lon_coord.getText()
                        + ",lightblue1";
+*/
+    String mapic_url = ""
+            + "https://open.mapquestapi.com/staticmap/v4/getmap?"
+            + "key=Fmjtd%7Cluu22qu1nu%2Cbw%3Do5-h6b2h&"
+            + "center="
+            + lat_coord.getText()
+            + ","
+            + lon_coord.getText()
+            + "&"
+            + "zoom=15&size=200,200&type=map&imagetype=png&"
+            + "pois=x,"
+            + lat_coord.getText()
+            + ","
+            + lon_coord.getText();
 
     Log.i("GP", mapic_url);
 

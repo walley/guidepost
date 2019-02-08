@@ -116,8 +116,6 @@ public class guidepost extends AppCompatActivity
 
     map = (MapView) findViewById(R.id.map);
 
-    /** Fire if there is more than 200 millisecs no zoom/scroll update markers */
-
     // If there is more than 200 millisecs no zoom/scroll update markers
     map.addMapListener(new DelayedMapListener(new MapListener() {
       @Override
@@ -135,32 +133,6 @@ public class guidepost extends AppCompatActivity
       }
     }, 200));
 
-
-   /* Ion.with(context)
-            .load("https://api.openstreetmap.social/table/all?output=json")
-            .asJsonArray()
-            .setCallback(new FutureCallback<JsonArray>() {
-              @Override
-              public void onCompleted(Exception exception, JsonArray result) {
-                JsonArray item_json;
-                // do stuff with the result or error
-                Log.i(TAG, "json loaded");
-                Iterator it = result.iterator();
-                while (it.hasNext()) {
-                  JsonElement element = (JsonElement) it.next();
-                  item_json = element.getAsJsonArray();
-                  try {
-                    int id = item_json.get(0).getAsInt();
-                    double lat = item_json.get(1).getAsDouble();
-                    double lon = item_json.get(2).getAsDouble();
-                    points.add(new LabelledGeoPoint(lat, lon, "gp" + id));
-                  } catch (Exception e) {
-                    Log.i(TAG, "exception " + e.toString());
-                  }
-                }
-              }
-            });
-*/
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
 
       create_gp_cluster_overlay();
@@ -229,15 +201,6 @@ public class guidepost extends AppCompatActivity
     InputStream inputStream = null;
     inputStream = getResources().openRawResource(resource);
     String html = "error something should be here error";
-    /*try {
-      html = IOUtils.toString(inputStream);
-    } catch (IOException e) {
-      Log.e("GP","read script " + e.toString());
-      e.printStackTrace();
-    }
-
-    Log.e("GP", html);
-*/
     WebView webView;
     webView = (WebView) findViewById(R.id.webview);
     WebSettings webSettings = webView.getSettings();

@@ -149,7 +149,7 @@ public Marker build_cluster_marker(StaticCluster cluster, MapView mapView, Strin
       } else {
 
         for (int i = 0; i < cluster.getSize(); i++) {
-          t += i + " " +cluster.getItem(i).getTitle() + "\n";
+          t += i + ":" +cluster.getItem(i).getTitle() + "\n";
         }
         Log.i(TAG, "item:" + t);
 
