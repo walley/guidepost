@@ -125,6 +125,7 @@ public Marker build_cluster_marker(StaticCluster cluster, MapView mapView, Strin
     m.setPosition(cluster.getPosition());
     winfowindow wi = new winfowindow(R.layout.cluster_bubble,mapView);
     wi.set_text(bubble_text);
+    wi.set_html("<html><body>"+bubble_text+"</body></html>");
     m.setInfoWindow(wi);
     m.setAnchor(this.mAnchorU, this.mAnchorV);
     Bitmap finalIcon = Bitmap.createBitmap(this.mClusterIcon.getWidth(), this.mClusterIcon.getHeight(), this.mClusterIcon.getConfig());

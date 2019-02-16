@@ -13,6 +13,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,7 +89,11 @@ public class winfowindow extends BasicInfoWindow
       return;
     }
     //handle image
+
+    WebView webView = mView.findViewById(R.id.cluster_bubble_webview);
+
     ImageView imageView = (ImageView) mView.findViewById(R.id.bubble_image);
+
     Drawable image = mMarkerRef.getImage();
     if (image != null) {
       imageView.setImageDrawable(image); //or setBackgroundDrawable(image)?
@@ -107,6 +112,17 @@ public class winfowindow extends BasicInfoWindow
 
     } else {
       Log.e(TAG, "settext: textview is null");
+    }
+  }
+
+  public void set_html(String t)
+  {
+    WebView temp = mView.findViewById(R.id.cluster_bubble_webview);
+    if (temp != null) {
+      Log.i(TAG, "set_html:" + t + "... end");
+      temp.loadData(t, "text/html", "UTF-8");
+    } else {
+      Log.e(TAG, "set_html temp is null");
     }
   }
 
