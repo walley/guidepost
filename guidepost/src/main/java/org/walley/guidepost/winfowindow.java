@@ -40,7 +40,7 @@ import android.widget.Toast;
 public class winfowindow extends BasicInfoWindow
 {
 
-  public static final String TAG = "GP-winfowindow";
+  private static final String TAG = "GP-winfowindow";
 
   protected Marker mMarkerRef; //reference to the Marker on which it is opened. Null if none.
 
@@ -54,7 +54,7 @@ public class winfowindow extends BasicInfoWindow
   {
     super(layoutResId, mapView);
     //mMarkerRef = null;
-    Log.d("GP", "winfowindow contructor");
+    Log.d(TAG, "winfowindow contructor");
   }
 
   /**
@@ -81,11 +81,11 @@ public class winfowindow extends BasicInfoWindow
       return;
     }
 
-    Log.w("GP", "marker onopen");
+    Log.w(TAG, "marker onopen");
 
     mMarkerRef = (Marker) item;
     if (mView == null) {
-      Log.w("GP", "InfoWindow.open, mView is null!");
+      Log.w(TAG, "InfoWindow.open, mView is null!");
       return;
     }
     //handle image
@@ -132,7 +132,7 @@ public class winfowindow extends BasicInfoWindow
     super.onClose();
     mMarkerRef = null;
 
-    Log.w("GP", "marker on close");
+    Log.w(TAG, "marker on close");
 
 
     //by default, do nothing else

@@ -442,15 +442,15 @@ public class basic extends AppCompatActivity
                     GeoPoint poi_loc = new GeoPoint(lat, lon);
 
                     final Marker gp_marker = new Marker(map);
-                    gp_marker.setTitle("" + id);
-                    //gp_marker.setSubDescription("" + img);
+                    gp_marker.setTitle("Guidepost id " + id);
+                    gp_marker.setSubDescription("" + id);
 
                     String snippet = "";
-                    snippet += "<h1>Guidepost " + id +"</h1>";
-                    snippet += "img:" + img + "<a href='" + img + "'>" + img + "</a>";
+                    snippet += "<a href='https://api.openstreetmap.social/" + img + "'>id " + id + "</a><br>";
+                    snippet += "<br>img:" + img;
                     snippet += "<br>author:" + author;
                     snippet += "<br>ref:" + ref;
-                    snippet += "<h2>tags:</h2><br>" + tags;
+                    snippet += "<h3>tags:</h3>" + tags;
 
                     gp_marker.setSnippet(snippet);
                     gp_marker.setPosition(poi_loc);
@@ -567,10 +567,6 @@ public class basic extends AppCompatActivity
       public void onClick(View view)
       {
         launch_camera();
-/*        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-          startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }*/
       }
     });
 

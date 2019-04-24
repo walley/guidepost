@@ -20,18 +20,18 @@ along with Guidepost.  If not, see <http://www.gnu.org/licenses/>.
 package org.walley.guidepost;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+//compile "com.android.support:exifinterface:25.1.0"
+//android.support.media.ExifInterface
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -496,7 +496,7 @@ public class share extends AppCompatActivity
   {
     Log.i(TAG, "post_execute(" + data + ")");
     String[] result = data.split("-");
-    Log.i(TAG, "post_execute: " + result);
+    Log.i(TAG, "post_execute: " + result.toString());
     if (result[0].equals("0")) {
       Log.e(TAG, "upload error:" + result[1]);
       alert(
@@ -513,6 +513,7 @@ public class share extends AppCompatActivity
       try {
         ((BitmapDrawable) image).getBitmap().recycle();
       } catch (Exception e) {
+        Log.e(TAG, "bitmap recycle error" + e.toString());
       }
 
       finish();
@@ -719,6 +720,7 @@ public class share extends AppCompatActivity
                         try {
                           ((BitmapDrawable) image).getBitmap().recycle();
                         } catch (Exception e) {
+                          Log.e(TAG, e.toString());
                         }
 
                         share.this.finish();

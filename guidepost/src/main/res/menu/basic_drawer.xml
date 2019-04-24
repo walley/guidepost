@@ -7,7 +7,7 @@
     <item
       android:id="@+id/nav_location"
       android:icon="@drawable/my_location"
-      android:title="Move to current location"/>
+      android:title="Current location"/>
     <item
       android:id="@+id/nav_gallery"
       android:icon="@drawable/ic_menu_gallery"

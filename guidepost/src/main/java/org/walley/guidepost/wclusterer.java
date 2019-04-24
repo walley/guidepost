@@ -124,7 +124,7 @@ public Marker build_cluster_marker(StaticCluster cluster, MapView mapView, Strin
     Marker m = new Marker(mapView);
     m.setPosition(cluster.getPosition());
     winfowindow wi = new winfowindow(R.layout.cluster_bubble,mapView);
-    wi.set_text(bubble_text);
+    wi.set_text("text");
     wi.set_html("<html><body>"+bubble_text+"</body></html>");
     m.setInfoWindow(wi);
     m.setAnchor(this.mAnchorU, this.mAnchorV);
@@ -150,7 +150,8 @@ public Marker build_cluster_marker(StaticCluster cluster, MapView mapView, Strin
       } else {
 
         for (int i = 0; i < cluster.getSize(); i++) {
-          t += i + ":" +cluster.getItem(i).getTitle() + "\n";
+          String id = cluster.getItem(i).getSubDescription();
+          t += i + ": <a href='http://api.openstreetmap.social/table/id/" + id + "'>" + id + "</a><br>\n";
         }
         Log.i(TAG, "item:" + t);
 
