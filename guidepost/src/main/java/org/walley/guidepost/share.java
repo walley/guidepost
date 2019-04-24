@@ -114,7 +114,7 @@ public class share extends AppCompatActivity
   }
 
   /******************************************************************************/
-  public String filename_from_uri(Uri content_uri)
+  public String filename_from_uri_deprecated(Uri content_uri)
   /******************************************************************************/
   {
     try {
@@ -124,27 +124,43 @@ public class share extends AppCompatActivity
       cursor.moveToFirst();
       return cursor.getString(column_index);
     } catch (Exception e) {
-      Log.e(TAG, "filename_from_uri failed");
+      Log.e(TAG, "filename_from_uri deprecated failed");
       return content_uri.getPath();
     }
   }
 
   /******************************************************************************/
-  public String filename_from_uri_new(Uri content_uri) {
+  public String filename_from_uri(Uri content_uri)
+  {
   /******************************************************************************/
     String res = null;
-    String[] proj = { MediaStore.Images.Media.DATA };
-    Cursor cursor = getContentResolver().query(content_uri, proj, null, null, null);
+    String[] proj = {MediaStore.Images.Media.DATA};
+//    Cursor cursor = getContentResolver().query(content_uri, proj, null, null, null);
+    Cursor cursor = getContentResolver().query(content_uri, null, null, null, null);
     try {
       if (cursor.moveToFirst()) {
-        ;
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        res = cursor.getString(column_index);
+        Log.i(TAG, "filename_from_uri cursor0 " + cursor.getString(0));
+        Log.i(TAG, "filename_from_uri cursor1 " + cursor.getString(1));
+//        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        int data_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+        int name_index = cursor.getColumnIndex("_display_name");
+        int size_index = cursor.getColumnIndex("_size");
+        Log.i(TAG, "data name" + data_index + " " + name_index);
+
+        if (data_index >= 0) {
+          res = cursor.getString(data_index);
+        } else if (name_index >= 0) {
+          //FIXME dirty hack
+          res = "/storage/emulated/0/Android/data/org.walley.guidepost/files/Pictures/" + cursor.getString(
+                  name_index);
+        }
       }
-    } catch (exception e) {
-      Log.e(TAG, "filename_from_uri new failed");
+    } catch (Exception e) {
+      Log.e(TAG, "filename_from_uri new failed:" + e.toString());
+      e.printStackTrace();
     }
     cursor.close();
+    Log.i(TAG, "filename_from_uri res:" + res);
     return res;
   }
 
