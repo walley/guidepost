@@ -1,5 +1,5 @@
 /*
-Copyright 2013-2018 Michal Grézl
+Copyright 2013-2019 Michal Grézl
 
 This file is part of Guidepost android app.
 
@@ -108,7 +108,7 @@ public class share extends AppCompatActivity
       try {
         entity.consumeContent();
       } catch (IOException e) {
-        Log.e("WC", "entity_consume_content error " + e.toString());
+        Log.e(TAG, "entity_consume_content error " + e.toString());
       }
     }
   }
@@ -124,9 +124,28 @@ public class share extends AppCompatActivity
       cursor.moveToFirst();
       return cursor.getString(column_index);
     } catch (Exception e) {
-      Log.e("GP", "filename_from_uri failed");
+      Log.e(TAG, "filename_from_uri failed");
       return content_uri.getPath();
     }
+  }
+
+  /******************************************************************************/
+  public String filename_from_uri_new(Uri content_uri) {
+  /******************************************************************************/
+    String res = null;
+    String[] proj = { MediaStore.Images.Media.DATA };
+    Cursor cursor = getContentResolver().query(content_uri, proj, null, null, null);
+    try {
+      if (cursor.moveToFirst()) {
+        ;
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        res = cursor.getString(column_index);
+      }
+    } catch (exception e) {
+      Log.e(TAG, "filename_from_uri new failed");
+    }
+    cursor.close();
+    return res;
   }
 
   /******************************************************************************/
@@ -168,13 +187,13 @@ public class share extends AppCompatActivity
     try {
       fd = this.getContentResolver().openAssetFileDescriptor(uri, "r");
     } catch (FileNotFoundException e) {
-      Log.e("GP", "read_and_scale(): file not found" + e.toString());
+      Log.e(TAG, "read_and_scale(): file not found" + e.toString());
     } finally {
       try {
         bm = BitmapFactory.decodeFileDescriptor(fd.getFileDescriptor(), null, options);
         fd.close();
       } catch (IOException e) {
-        Log.e("GP", "read_and_scale(): io error while decoding" + e.toString());
+        Log.e(TAG, "read_and_scale(): io error while decoding" + e.toString());
       }
     }
     return bm;
@@ -212,7 +231,7 @@ public class share extends AppCompatActivity
             + ","
             + lon_coord.getText();
 
-    Log.i("GP", mapic_url);
+    Log.i(TAG, mapic_url);
 
     UrlImageViewHelper.setUrlDrawable(image_map, mapic_url, R.drawable.placeholder);
   }
@@ -230,7 +249,7 @@ public class share extends AppCompatActivity
           if (image_map.getViewTreeObserver().isAlive()) {
             int map_height = image_map.getMeasuredHeight();
             int map_width = image_map.getMeasuredWidth();
-            Log.i("GP", "1 imageview dimensions:" + map_width + " x " + map_height);
+            Log.i(TAG, "1 imageview dimensions:" + map_width + " x " + map_height);
             place_map(map_width, map_height);
             image_map.getViewTreeObserver().removeGlobalOnLayoutListener(this);
           }
@@ -299,11 +318,12 @@ public class share extends AppCompatActivity
     {
       public void onClick(View v)
       {
-        Log.d("GP", "cancel button");
+        Log.i(TAG, "cancel button");
 
         try {
           ((BitmapDrawable) image).getBitmap().recycle();
         } catch (Exception e) {
+          Log.e(TAG, "exception recycle");
         }
 
         finish();
@@ -321,7 +341,7 @@ public class share extends AppCompatActivity
                 share.this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
           ActivityCompat.requestPermissions(
                   share.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1337);
-          Log.i("GP", "Permission");
+          Log.i(TAG, "Permission");
           return;
         }
 
@@ -356,7 +376,7 @@ public class share extends AppCompatActivity
 //        image = null;
 //        image = new BitmapDrawable(getResources(), MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri));
         } catch (Exception e) {
-          Log.e("GP", "bitmap error");
+          Log.e(TAG, "bitmap error");
         } catch (OutOfMemoryError e) {
           image = null; //getResources().getDrawable(R.drawable.oom);
           Toast.makeText(this, "Cannot show image, out of memory", Toast.LENGTH_LONG).show();
@@ -420,14 +440,14 @@ public class share extends AppCompatActivity
     try {
       exif = new ExifInterface(filename_from_uri(uri));
     } catch (Exception e) {
-      Log.e("GP", "exif interface error " + e.toString());
+      Log.e(TAG, "exif interface error " + e.toString());
     }
 
     try {
       model = exif.getAttribute(ExifInterface.TAG_MODEL);
-      Log.i("GP", "exif get model:" + model);
+      Log.i(TAG, "exif get model:" + model);
     } catch (Exception e) {
-      Log.e("GP", "exif getattribute error: " + e.toString());
+      Log.e(TAG, "exif getattribute error: " + e.toString());
     }
 
     try {
@@ -437,12 +457,12 @@ public class share extends AppCompatActivity
         lat_coord.setText(Float.toString(lat));
         lon_coord.setText(Float.toString(lon));
       } else {
-        Log.i("GP", "getlatlong returned false");
+        Log.i(TAG, "getlatlong returned false");
         lat_coord.setText("0");
         lon_coord.setText("0");
       }
     } catch (Exception e) {
-      Log.e("GP", "exif getlatlong error: " + e.toString());
+      Log.e(TAG, "exif getlatlong error: " + e.toString());
     }
   }
 
@@ -462,7 +482,7 @@ public class share extends AppCompatActivity
     String[] result = data.split("-");
     Log.i(TAG, "post_execute: " + result);
     if (result[0].equals("0")) {
-      Log.e("GP", "upload error:" + result[1]);
+      Log.e(TAG, "upload error:" + result[1]);
       alert(
               getResources().getString(R.string.uploadfailed),
               getResources().getString(R.string.uploaderror) + " " + result[1] + "."
@@ -560,7 +580,7 @@ public class share extends AppCompatActivity
     {
 
       if (context == null) {
-        Log.e("GP", "null context");
+        Log.e(TAG, "null context");
       }
 
       pd = new ProgressDialog(context);
@@ -579,7 +599,7 @@ public class share extends AppCompatActivity
           try {
             post_request.abort();
           } catch (Exception e) {
-            Log.e("GP", "post abort failed: " + e.toString());
+            Log.e(TAG, "post abort failed: " + e.toString());
           }
         }
       });
@@ -625,7 +645,7 @@ public class share extends AppCompatActivity
         serverResponse = EntityUtils.toString(entity);
         entity_consume_content(entity);
 
-        Log.i("GP", "doInBackground server response:" + serverResponse);
+        Log.i(TAG, "doInBackground server response:" + serverResponse);
 
       } catch (Exception e) {
         e.printStackTrace();
@@ -644,7 +664,7 @@ public class share extends AppCompatActivity
     @Override
     protected void onPostExecute(String result)
     {
-      Log.i("GP", "onPostExecute" + result);
+      Log.i(TAG, "onPostExecute" + result);
       pd.dismiss();
       post_execute(result);
     }
@@ -746,7 +766,7 @@ public class share extends AppCompatActivity
         }
       }
     } else {
-      Log.e("GP", "not our request?");
+      Log.e(TAG, "not our request?");
       super.onRequestPermissionsResult(request, permissions, results);
     }
   }
