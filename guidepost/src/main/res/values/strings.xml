@@ -7,7 +7,7 @@
   <string name="author">Author:</string>
   <string name="cancel">Cancel</string>
   <string name="send">Send</string>
-  <string name="gpl">Guidepost  Copyright (C) 2013-2015  Michal Grezl \n
+  <string name="gpl">Guidepost  Copyright (C) 2013-2019  Michal Grezl \n
 This program comes with ABSOLUTELY NO WARRANTY; for details see license.\n
 This is free software, and you are welcome to redistribute it under certain conditions; see license for details.
 \n
@@ -40,7 +40,7 @@ you must use share with ... function from other apps such as camera.
   <string name="action_example">Example action</string>
   <string name="action_settings">Settings</string>
   <string name="nav_header_desc">Navigation header</string>
-  <string name="nav_header_subtitle">additional information</string>
+  <string name="nav_header_subtitle">Project Guidepost map viewer</string>
   <string name="nav_header_title">Guidepost</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
   <string name="navigation_drawer_open">Open navigation drawer</string>

@@ -1,5 +1,5 @@
 /*
-Copyright 2013-2018 Michal Grézl
+Copyright 2013-2019 Michal Grézl
 
 This file is part of Guidepost.
 
@@ -43,8 +43,6 @@ import android.webkit.WebSettings;
 import android.widget.Toast;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.koushikdutta.async.future.Cancellable;
-import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import org.osmdroid.api.IGeoPoint;
@@ -241,7 +239,7 @@ public class guidepost extends AppCompatActivity
   {
 //PERMISSION_GRANTED Constant Value: 0 (0x00000000)
 //PERMISSION_DENIED Constant Value: -1 (0xffffffff)
-    Log.e(TAG,"request:"+request);
+    Log.e(TAG,"onRequestPermissionsResult request:" + request);
     if (request == 1337) {
       Log.i(TAG, "Received response for contact permissions request.");
       Log.i(TAG, "l:" + permissions.length);
@@ -297,7 +295,7 @@ public class guidepost extends AppCompatActivity
 
                 JsonArray item_json;
                 // do stuff with the result or error
-                Log.i(TAG, "bbox json loaded"+result);
+                Log.i(TAG, "bbox json loaded" + result);
                 Iterator it = result.iterator();
                 while (it.hasNext()) {
                   JsonElement element = (JsonElement) it.next();

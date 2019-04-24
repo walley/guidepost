@@ -1,5 +1,5 @@
 /*
-Copyright 2013-2018 Michal Grézl
+Copyright 2013-2019 Michal Grézl
 
 This file is part of Guidepost.
 
@@ -26,12 +26,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.View;
@@ -52,12 +54,12 @@ import com.koushikdutta.ion.Ion;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
-import org.osmdroid.api.IMapView;
-import org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer;
+import org.osmdroid.config.Configuration;
 import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
+import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -67,7 +69,11 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.LabelledGeoPoint;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -77,9 +83,10 @@ public class basic extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
 
-  static final int REQUEST_IMAGE_CAPTURE = 1;
   public static final String TAG = "GP-B";
-  private static final int RESULT_SETTINGS = 1;
+
+  private static final int REQUEST_IMAGE_CAPTURE = 1;
+  private static final int RESULT_SETTINGS = 2;
 
   ActionBarDrawerToggle toggle;
   Bitmap b_cluster_icon;
@@ -89,6 +96,7 @@ public class basic extends AppCompatActivity
   DrawerLayout drawer;
   FloatingActionButton fab;
   GeoPoint start_point;
+  GeoPoint current_point;
   IMapController map_controller;
   int gp_overlay_number;
   List<IGeoPoint> points = new ArrayList<>();
@@ -98,6 +106,8 @@ public class basic extends AppCompatActivity
   //  RadiusMarkerClusterer gp_marker_cluster;
   wclusterer gp_marker_cluster;
   Toolbar toolbar;
+  wlocation gps;
+  String current_photo;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -117,6 +127,12 @@ public class basic extends AppCompatActivity
       create_map();
       move_to_default_position();
     }
+
+    gps = new wlocation(basic.this);
+
+    if (!gps.is_gps_enabled) {
+      Toast.makeText(this, "GPS Disabled", Toast.LENGTH_LONG).show();
+    }
   }
 
   @Override
@@ -129,10 +145,29 @@ public class basic extends AppCompatActivity
         //    validate_settings();
         //    showUserSettings();
         break;
+      case REQUEST_IMAGE_CAPTURE:
+        if (resultCode == RESULT_OK) {
+          try {
+            File file = new File(current_photo);
+//            Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", current_photo);
+            Uri uri = FileProvider.getUriForFile(context, "org.walley.guidepost", file);
+            Log.i(TAG, "onActivityResult(REQUEST_IMAGE_CAPTURE) currphoto:" + current_photo);
+            Log.i(TAG, "onActivityResult(REQUEST_IMAGE_CAPTURE) uri:" + uri.toString());
+            Intent share = new Intent();
+            share.setAction(Intent.ACTION_SEND);
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+            share.setType("image/jpeg");
+            share.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(share);
+          } catch (Exception e) {
+            e.printStackTrace();
+            Log.i(TAG, "onActivityResult(REQUEST_IMAGE_CAPTURE):" + e.toString());
+          }
+        }
+        break;
+
     }
-
   }
-
 
   @Override
   public void onBackPressed()
@@ -179,11 +214,13 @@ public class basic extends AppCompatActivity
     int id = item.getItemId();
 
     if (id == R.id.nav_location) {
-      move_to_default_position();
-    } else if (id == R.id.nav_slideshow) {
-
-    } else if (id == R.id.nav_manage) {
-
+      move_to_current_position();
+    } else if (id == R.id.nav_gallery) {
+      Intent intent = new Intent();
+      intent.setAction(android.content.Intent.ACTION_VIEW);
+      intent.setType("image/*");
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      startActivity(intent);
     } else if (id == R.id.nav_share) {
 
     } else if (id == R.id.nav_send) {
@@ -462,6 +499,9 @@ public class basic extends AppCompatActivity
     location_overlay.enableMyLocation();
     map.getOverlays().add(location_overlay);
 
+    Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
+
+    map.setTilesScaledToDpi(true);
     map.setTileSource(TileSourceFactory.MAPNIK);
     map.setBuiltInZoomControls(true);
     map.setMultiTouchControls(true);
@@ -472,7 +512,7 @@ public class basic extends AppCompatActivity
       public boolean onScroll(ScrollEvent event)
       {
         Log.i(TAG, "onScroll " + event.getX() + "," + event.getY());
-        Toast.makeText(context, "after " + map.getOverlays().size(), Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "after " + map.getOverlays().size());
         reload_guideposts();
         return false;
       }
@@ -480,9 +520,7 @@ public class basic extends AppCompatActivity
       @Override
       public boolean onZoom(ZoomEvent event)
       {
-        Log.i(TAG, " onZoom " + event.getZoomLevel());
-        Toast.makeText(
-                context, "after zoom " + map.getOverlays().size(), Toast.LENGTH_SHORT).show();
+        Log.i(TAG, " onZoom level:" + event.getZoomLevel() +" ovrl size" + map.getOverlays().size());
         reload_guideposts();
         return false;
       }
@@ -499,6 +537,23 @@ public class basic extends AppCompatActivity
     //map_controller.animateTo(start_point);
   }
 
+  void move_to_current_position()
+  {
+    current_point = start_point;
+
+    if (gps.can_get_location()) {
+      gps.get_gps_location();
+      double latitude = gps.getLatitude();
+      double longitude = gps.getLongitude();
+      current_point = new GeoPoint(latitude, longitude);
+    }
+
+    map_controller.setZoom(13);
+    map_controller.zoomTo(13.0);
+    map_controller.setCenter(current_point);
+    //map_controller.animateTo(current_point);
+  }
+
   private void create_ui()
   {
     toolbar = findViewById(R.id.toolbar);
@@ -511,13 +566,11 @@ public class basic extends AppCompatActivity
       @Override
       public void onClick(View view)
       {
-        Snackbar.make(view, "Yo! this will launch camera", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        launch_camera();
+/*        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
           startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
+        }*/
       }
     });
 
@@ -537,4 +590,61 @@ public class basic extends AppCompatActivity
     d_poi_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.guidepost, null);
     b_cluster_icon = ((BitmapDrawable) d_cluster_icon).getBitmap();
   }
+
+  private File create_image_file() throws IOException
+  {
+    File image = null;
+
+    // Create an image file name
+    String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
+    String image_filename = "GP_" + date + "_";
+    File directory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    try {
+      image = File.createTempFile(image_filename, ".jpg", directory);
+    } catch (Exception e) {
+      Log.e(TAG, "create_image_file(): error " + e.toString());
+      e.printStackTrace();
+    }
+    // Save a file: path for use with ACTION_VIEW intents
+    current_photo = image.getAbsolutePath();
+    Log.i(TAG, "create_image_file(): " + current_photo);
+    return image;
+  }
+
+  private void launch_camera()
+  {
+    Uri photoURI = null;
+
+    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    // Ensure that there's a camera activity to handle the intent
+    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+      Log.i(TAG, "launch_camera(): launching camera");
+      // Create the File where the photo should go
+      File image_file = null;
+      try {
+        image_file = create_image_file();
+      } catch (IOException e) {
+        // Error occurred while creating the File
+        Log.e(TAG, "launch_camera(): error  " + e.getMessage());
+      }
+      // Continue only if the File was successfully created
+      if (image_file != null) {
+
+        try {
+          photoURI = FileProvider.getUriForFile(this,
+                                                "org.walley.guidepost",
+                                                image_file);
+        } catch (Exception e) {
+          Log.e(TAG, "launch_camera(): error  " + e.toString());
+        }
+
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+      }
+    } else {
+      Log.e(TAG, "launch_camera(): no camera");
+    }
+
+  }
+
 }

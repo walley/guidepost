@@ -45,6 +45,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -60,12 +61,15 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 import org.walley.guidepost.cme.ProgressListener;
+
 import android.app.AlertDialog;
 import android.graphics.BitmapFactory;
 import android.content.res.AssetFileDescriptor;
+
 import java.io.FileNotFoundException;
 
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.util.DisplayMetrics;
@@ -104,7 +108,7 @@ public class share extends AppCompatActivity
       try {
         entity.consumeContent();
       } catch (IOException e) {
-        Log.e("WC","entity_consume_content error " + e.toString());
+        Log.e("WC", "entity_consume_content error " + e.toString());
       }
     }
   }
@@ -120,7 +124,7 @@ public class share extends AppCompatActivity
       cursor.moveToFirst();
       return cursor.getString(column_index);
     } catch (Exception e) {
-      Log.e("GP","filename_from_uri failed");
+      Log.e("GP", "filename_from_uri failed");
       return content_uri.getPath();
     }
   }
@@ -140,7 +144,7 @@ public class share extends AppCompatActivity
       // Calculate the largest inSampleSize value that is a power of 2 and keeps both
       // height and width larger than the requested height and width.
       while ((halfHeight / inSampleSize) > reqHeight
-             && (halfWidth / inSampleSize) > reqWidth) {
+              && (halfWidth / inSampleSize) > reqWidth) {
         inSampleSize *= 2;
       }
     }
@@ -148,6 +152,7 @@ public class share extends AppCompatActivity
   }
 
 // Read bitmap
+
   /******************************************************************************/
   public Bitmap read_and_scale(Uri uri)
   /******************************************************************************/
@@ -217,9 +222,12 @@ public class share extends AppCompatActivity
   /******************************************************************************/
   {
     if (image_map.getViewTreeObserver().isAlive()) {
-      image_map.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-        @Override public void onGlobalLayout() {
-          if(image_map.getViewTreeObserver().isAlive()) {
+      image_map.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener()
+      {
+        @Override
+        public void onGlobalLayout()
+        {
+          if (image_map.getViewTreeObserver().isAlive()) {
             int map_height = image_map.getMeasuredHeight();
             int map_width = image_map.getMeasuredWidth();
             Log.i("GP", "1 imageview dimensions:" + map_width + " x " + map_height);
@@ -264,8 +272,10 @@ public class share extends AppCompatActivity
       Toast.makeText(this, "GPS Disabled", Toast.LENGTH_LONG).show();
     }
 
-    button_send.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
+    button_send.setOnClickListener(new View.OnClickListener()
+    {
+      public void onClick(View v)
+      {
         String text_lat = (String) lat_coord.getText().toString();
         String text_lon = (String) lon_coord.getText().toString();
 
@@ -278,20 +288,22 @@ public class share extends AppCompatActivity
           messagebox();
         } else {
           String author = (String) text_author.getText().toString();
-          Log.d("GP","upload " + author);
+          Log.d("GP", "upload " + author);
           upload_file(context, author, text_lat, text_lon);
-          Log.d("GP","after upload " + author);
+          Log.d("GP", "after upload " + author);
         }
       }
     });
 
-    button_cancel.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        Log.d("GP","cancel button");
+    button_cancel.setOnClickListener(new View.OnClickListener()
+    {
+      public void onClick(View v)
+      {
+        Log.d("GP", "cancel button");
 
         try {
-          ((BitmapDrawable)image).getBitmap().recycle();
-        } catch(Exception e) {
+          ((BitmapDrawable) image).getBitmap().recycle();
+        } catch (Exception e) {
         }
 
         finish();
@@ -299,12 +311,16 @@ public class share extends AppCompatActivity
     });
 
     /**** map click ****/
-    image_map.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        Log.d("GP","map click");
+    image_map.setOnClickListener(new View.OnClickListener()
+    {
+      public void onClick(View v)
+      {
+        Log.d("GP", "map click");
 
-        if (ActivityCompat.checkSelfPermission(share.this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
-          ActivityCompat.requestPermissions(share.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1337);
+        if (ActivityCompat.checkSelfPermission(
+                share.this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(
+                  share.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1337);
           Log.i("GP", "Permission");
           return;
         }
@@ -313,14 +329,18 @@ public class share extends AppCompatActivity
           gps.get_gps_location();
           double latitude = gps.getLatitude();
           double longitude = gps.getLongitude();
-          Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+          Toast.makeText(
+                  getApplicationContext(),
+                  "Your Location is - \nLat: " + latitude + "\nLong: " + longitude,
+                  Toast.LENGTH_LONG
+                        ).show();
           if (latitude > 0 && longitude > 0) {
             lat_coord.setText(Double.toString(latitude));
             lon_coord.setText(Double.toString(longitude));
           }
         } else {
           Toast.makeText(getApplicationContext(), "cannot get location", Toast.LENGTH_LONG).show();
-           gps.showSettingsAlert();
+          gps.showSettingsAlert();
         }
       }
     });
@@ -335,8 +355,8 @@ public class share extends AppCompatActivity
           image = new BitmapDrawable(getResources(), read_and_scale(uri));
 //        image = null;
 //        image = new BitmapDrawable(getResources(), MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri));
-        } catch(Exception e) {
-          Log.e("GP","bitmap error");
+        } catch (Exception e) {
+          Log.e("GP", "bitmap error");
         } catch (OutOfMemoryError e) {
           image = null; //getResources().getDrawable(R.drawable.oom);
           Toast.makeText(this, "Cannot show image, out of memory", Toast.LENGTH_LONG).show();
@@ -346,9 +366,11 @@ public class share extends AppCompatActivity
 
         thumbnail.setImageDrawable(image);
 
-        image_map.post(new Runnable() {
+        image_map.post(new Runnable()
+        {
           @Override
-          public void run() {
+          public void run()
+          {
             prepare_map();
           }
         });
@@ -356,20 +378,25 @@ public class share extends AppCompatActivity
     }
   }
 
-/******************************************************************************/
+  /******************************************************************************/
   protected void onStop()
-/******************************************************************************/
+  /******************************************************************************/
   {
     super.onStop();
     gps.stop_using_gps();
   }
 
+  /******************************************************************************/
   public void set_image_location()
+  /******************************************************************************/
   {
     gps.get_gps_location();
     double latitude = gps.getLatitude();
     double longitude = gps.getLongitude();
-    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+    Toast.makeText(
+            getApplicationContext(),
+            "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG
+                  ).show();
     if (latitude > 0 && longitude > 0) {
       lat_coord.setText(Double.toString(latitude));
       lon_coord.setText(Double.toString(longitude));
@@ -377,26 +404,30 @@ public class share extends AppCompatActivity
 
   }
 
-/******************************************************************************/
+  /******************************************************************************/
   public void get_exif_data(Uri uri)
-/******************************************************************************/
+  /******************************************************************************/
   {
     float[] output = new float[2];
     String model;
 
-    Toast.makeText(this, getResources().getString(R.string.selectedfile) + uri.toString(), Toast.LENGTH_LONG).show();
+    Toast.makeText(
+            this, getResources().getString(R.string.selectedfile) + uri.toString(),
+            Toast.LENGTH_LONG
+                  ).show();
+    Log.i(TAG, getResources().getString(R.string.selectedfile) + " " + uri.toString());
 
     try {
       exif = new ExifInterface(filename_from_uri(uri));
-    } catch(Exception e) {
-      Log.e("GP","exif interface error " + e.toString());
+    } catch (Exception e) {
+      Log.e("GP", "exif interface error " + e.toString());
     }
 
     try {
       model = exif.getAttribute(ExifInterface.TAG_MODEL);
-      Log.i("GP","exif get model:" + model);
-    } catch(Exception e) {
-      Log.e("GP","exif getattribute error: " + e.toString());
+      Log.i("GP", "exif get model:" + model);
+    } catch (Exception e) {
+      Log.e("GP", "exif getattribute error: " + e.toString());
     }
 
     try {
@@ -406,12 +437,12 @@ public class share extends AppCompatActivity
         lat_coord.setText(Float.toString(lat));
         lon_coord.setText(Float.toString(lon));
       } else {
-        Log.i("GP","getlatlong returned false");
+        Log.i("GP", "getlatlong returned false");
         lat_coord.setText("0");
         lon_coord.setText("0");
       }
-    } catch(Exception e) {
-      Log.e("GP","exif getlatlong error: " + e.toString());
+    } catch (Exception e) {
+      Log.e("GP", "exif getlatlong error: " + e.toString());
     }
   }
 
@@ -427,20 +458,25 @@ public class share extends AppCompatActivity
   public void post_execute(String data)
   /******************************************************************************/
   {
-    Log.i("GP", "in mainactivity" + data);
+    Log.i(TAG, "post_execute(" + data + ")");
     String[] result = data.split("-");
+    Log.i(TAG, "post_execute: " + result);
     if (result[0].equals("0")) {
       Log.e("GP", "upload error:" + result[1]);
-      alert(getResources().getString(R.string.uploadfailed),
-            getResources().getString(R.string.uploaderror)  + " " + result[1] + "."
+      alert(
+              getResources().getString(R.string.uploadfailed),
+              getResources().getString(R.string.uploaderror) + " " + result[1] + "."
            );
 
     } else {
-      Toast.makeText(getBaseContext(), getResources().getString(R.string.uploaded), Toast.LENGTH_LONG).show();
+      Toast.makeText(
+              getBaseContext(), getResources().getString(R.string.uploaded),
+              Toast.LENGTH_LONG
+                    ).show();
 
       try {
-        ((BitmapDrawable)image).getBitmap().recycle();
-      } catch(Exception e) {
+        ((BitmapDrawable) image).getBitmap().recycle();
+      } catch (Exception e) {
       }
 
       finish();
@@ -465,14 +501,14 @@ public class share extends AppCompatActivity
     }
 
     if (context == null) {
-      Log.e("GP","null context");
+      Log.e("GP", "null context");
     }
 
     File fi = new File(filename_from_uri(uri));
 
     HttpMultipartPost hmp = new HttpMultipartPost(context, author, lat, lon, fi);
     hmp.execute();
-    Log.d("GP","after execute");
+    Log.d("GP", "after execute");
   }
 
   /******************************************************************************/
@@ -495,7 +531,7 @@ public class share extends AppCompatActivity
 
   /******************************************************************************/
   public class HttpMultipartPost extends AsyncTask<String, Integer, String>
-  /******************************************************************************/
+          /******************************************************************************/
   {
     private Context context;
     private String author;
@@ -524,7 +560,7 @@ public class share extends AppCompatActivity
     {
 
       if (context == null) {
-        Log.e("GP","null context");
+        Log.e("GP", "null context");
       }
 
       pd = new ProgressDialog(context);
@@ -534,14 +570,16 @@ public class share extends AppCompatActivity
       pd.setCancelable(false);
 
       // Set a click listener for progress dialog cancel button
-      pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+      pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener()
+      {
         @Override
-        public void onClick(DialogInterface dialog, int which) {
+        public void onClick(DialogInterface dialog, int which)
+        {
           pd.dismiss();
           try {
             post_request.abort();
-          } catch(Exception e) {
-            Log.e("GP","post abort failed: " + e.toString());
+          } catch (Exception e) {
+            Log.e("GP", "post abort failed: " + e.toString());
           }
         }
       });
@@ -562,12 +600,14 @@ public class share extends AppCompatActivity
         post_request = new HttpPost(serverPath);
 
         cme multipart_content = new cme(
-        new ProgressListener() {
-          @Override
-          public void transferred(long value) {
-            publishProgress((int) ((value / (float) post_total_size) * 100));
-          }
-        });
+                new ProgressListener()
+                {
+                  @Override
+                  public void transferred(long value)
+                  {
+                    publishProgress((int) ((value / (float) post_total_size) * 100));
+                  }
+                });
 
         multipart_content.addPart("action", new StringBody("file"));
         multipart_content.addPart("source", new StringBody("mobile"));
@@ -601,7 +641,8 @@ public class share extends AppCompatActivity
       pd.setProgress((int) (progress[0]));
     }
 
-    @Override protected void onPostExecute(String result)
+    @Override
+    protected void onPostExecute(String result)
     {
       Log.i("GP", "onPostExecute" + result);
       pd.dismiss();
@@ -621,25 +662,33 @@ public class share extends AppCompatActivity
   /******************************************************************************/
   {
     new AlertDialog.Builder(this)
-    .setTitle(title)
-    .setMessage(message)
-    .setPositiveButton(getResources().getString(R.string.tryagain), new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        dialog.cancel();
-      }
-    })
-    .setNegativeButton(getResources().getString(R.string.bye), new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(
+                    getResources().getString(R.string.tryagain),
+                    new DialogInterface.OnClickListener()
+                    {
+                      public void onClick(DialogInterface dialog, int which)
+                      {
+                        dialog.cancel();
+                      }
+                    }
+                              )
+            .setNegativeButton(
+                    getResources().getString(R.string.bye), new DialogInterface.OnClickListener()
+                    {
+                      public void onClick(DialogInterface dialog, int which)
+                      {
 
-        try {
-          ((BitmapDrawable)image).getBitmap().recycle();
-        } catch(Exception e) {
-        }
+                        try {
+                          ((BitmapDrawable) image).getBitmap().recycle();
+                        } catch (Exception e) {
+                        }
 
-        share.this.finish();
-      }
-    })
-    .show();
+                        share.this.finish();
+                      }
+                    })
+            .show();
   }
 
 
@@ -648,13 +697,15 @@ public class share extends AppCompatActivity
   /******************************************************************************/
   {
     new AlertDialog.Builder(this)
-    .setMessage(getResources().getString(R.string.wrongcoords))
-    .setCancelable(false)
-    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int id) {
-      }
-    })
-    .show();
+            .setMessage(getResources().getString(R.string.wrongcoords))
+            .setCancelable(false)
+            .setPositiveButton("OK", new DialogInterface.OnClickListener()
+            {
+              public void onClick(DialogInterface dialog, int id)
+              {
+              }
+            })
+            .show();
   }
 
   /******************************************************************************/
@@ -662,13 +713,15 @@ public class share extends AppCompatActivity
   /******************************************************************************/
   {
     new AlertDialog.Builder(this)
-    .setMessage(s)
-    .setCancelable(false)
-    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int id) {
-      }
-    })
-    .show();
+            .setMessage(s)
+            .setCancelable(false)
+            .setPositiveButton("OK", new DialogInterface.OnClickListener()
+            {
+              public void onClick(DialogInterface dialog, int id)
+              {
+              }
+            })
+            .show();
   }
 
   @Override
@@ -676,22 +729,24 @@ public class share extends AppCompatActivity
   {
 //PERMISSION_GRANTED Constant Value: 0 (0x00000000)
 //PERMISSION_DENIED Constant Value: -1 (0xffffffff)
-    Log.e(TAG,"request:"+request);
+    Log.e(TAG, "request:" + request);
     if (request == 1337) {
       Log.i(TAG, "Received response for contact permissions request.");
       Log.i(TAG, "l:" + permissions.length);
-      for(int i = 0; i < permissions.length; i++) {
+      for (int i = 0; i < permissions.length; i++) {
         Log.i(TAG, "perm,res:" + permissions[i] + results[i]);
-        switch (permissions[i]){
+        switch (permissions[i]) {
           case "android.permission.ACCESS_FINE_LOCATION":
-            if (results[i] == PERMISSION_GRANTED) {set_image_location();}
-          break;
+            if (results[i] == PERMISSION_GRANTED) {
+              set_image_location();
+            }
+            break;
           default:
-          break;
+            break;
         }
       }
     } else {
-      Log.e("GP","not our request?");
+      Log.e("GP", "not our request?");
       super.onRequestPermissionsResult(request, permissions, results);
     }
   }

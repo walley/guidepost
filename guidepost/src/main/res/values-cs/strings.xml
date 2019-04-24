@@ -37,6 +37,6 @@ Kopii Obecné veřejné licence GNU jste měli obdržet spolu s tímto programem
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
   <string name="action_example">Example action</string>
-
+  <string name="nav_header_subtitle">Prohlížeč mapy projeku Guidepost</string>
 
 </resources>
