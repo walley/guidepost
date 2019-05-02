@@ -59,6 +59,11 @@ public class wclusterer extends MarkerClusterer {
     this.mItems.add(marker);
   }
 
+  public int get_size()
+  {
+    return this.mItems.size();
+  }
+
   public void setRadius(int radius) {
     this.mRadiusInPixels = radius;
   }

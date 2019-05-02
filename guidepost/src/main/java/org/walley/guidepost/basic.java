@@ -352,16 +352,13 @@ public class basic extends AppCompatActivity
                                          );
 
       }
-    } else
-
-    {
-      // Permission has already been granted
+    } else {
+      Log.i(TAG, "Permission has already been granted");
     }
   }
 
   private void create_gp_cluster_overlay()
   {
-//    gp_marker_cluster = new RadiusMarkerClusterer(context);
     gp_marker_cluster = new wclusterer(context);
     gp_marker_cluster.setIcon(b_cluster_icon);
     gp_marker_cluster.getTextPaint().setTextSize(12 * getResources().getDisplayMetrics().density);
@@ -441,21 +438,39 @@ public class basic extends AppCompatActivity
 
                     GeoPoint poi_loc = new GeoPoint(lat, lon);
 
-                    final Marker gp_marker = new Marker(map);
+                    //final
+                    Marker gp_marker = new Marker(map);
+                    winfowindow wi = new winfowindow(R.layout.cluster_bubble, map);
+
+                    final StringBuilder snippet = new StringBuilder();
+
+                    snippet.append("<html><body>");
+                    snippet.append(
+                            "<img src='http://api.openstreetmap.social/p/phpThumb.php?h=150&src=http://api.openstreetmap.social/").append(
+                            img).append("'>");
+                    snippet.append("<a href='https://api.openstreetmap.social/").append(img).append(
+                            "'>id ").append(id);
+                    snippet.append("</a><br>");
+                    snippet.append("<ul>");
+                    snippet.append("<li>image:").append(img);
+                    snippet.append("<li>author:").append(author);
+                    snippet.append("<li>ref:").append(ref);
+                    snippet.append("<li>license:").append(license);
+                    snippet.append("</ul>");
+                    snippet.append("<h3>tags:</h3>").append(tags);
+                    snippet.append("</body></html>");
+
+                    wi.set_text("Guidepost id " + id);
+                    wi.set_html(snippet.toString());
+                    gp_marker.setInfoWindow(wi);
+
                     gp_marker.setTitle("Guidepost id " + id);
                     gp_marker.setSubDescription("" + id);
 
-                    String snippet = "";
-                    snippet += "<a href='https://api.openstreetmap.social/" + img + "'>id " + id + "</a><br>";
-                    snippet += "<br>img:" + img;
-                    snippet += "<br>author:" + author;
-                    snippet += "<br>ref:" + ref;
-                    snippet += "<h3>tags:</h3>" + tags;
-
-                    gp_marker.setSnippet(snippet);
+//                    gp_marker.setSnippet(snippet);
                     gp_marker.setPosition(poi_loc);
                     gp_marker.setIcon(d_poi_icon);
-                    gp_marker.setImage(d_poi_icon);
+                    //gp_marker.setImage(d_poi_icon);
 
 /*                    Ion.with(context)
                        .load("http://api.openstreetmap.social/p/phpThumb.php?h=150&src=http://api.openstreetmap.social/" + img)
@@ -471,8 +486,6 @@ public class basic extends AppCompatActivity
                        });
 */
                     gp_marker_cluster.add(gp_marker);
-
-//                    Log.i(TAG, "added latlon:" + lat + "," + lon + ":" + id);
                     map.invalidate();
                   } catch (Exception e) {
                     Log.e(TAG, "exception adding " + e.toString());
@@ -484,7 +497,7 @@ public class basic extends AppCompatActivity
 
               }
             });
-
+    Log.i(TAG, "after size " + gp_marker_cluster.get_size());
   }
 
   private void create_map()
@@ -512,7 +525,7 @@ public class basic extends AppCompatActivity
       public boolean onScroll(ScrollEvent event)
       {
         Log.i(TAG, "onScroll " + event.getX() + "," + event.getY());
-        Log.i(TAG, "after " + map.getOverlays().size());
+        Log.i(TAG, "before size " + gp_marker_cluster.get_size());
         reload_guideposts();
         return false;
       }
@@ -521,6 +534,7 @@ public class basic extends AppCompatActivity
       public boolean onZoom(ZoomEvent event)
       {
         Log.i(TAG, " onZoom level:" + event.getZoomLevel() +" ovrl size" + map.getOverlays().size());
+        Log.i(TAG, "before size " + gp_marker_cluster.get_size());
         reload_guideposts();
         return false;
       }
