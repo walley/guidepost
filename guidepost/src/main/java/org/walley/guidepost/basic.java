@@ -51,6 +51,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
@@ -330,9 +331,7 @@ public class basic extends AppCompatActivity
   void request_permissionx()
   {
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED)
-
-    {
+            != PackageManager.PERMISSION_GRANTED) {
 
       // Permission is not granted
       // Should we show an explanation?
@@ -373,6 +372,7 @@ public class basic extends AppCompatActivity
 
   private void reload_guideposts()
   {
+
     StringBuilder bbox_param = new StringBuilder();
     BoundingBox bbox = map.getBoundingBox();
     double minlat = bbox.getActualSouth();
@@ -386,6 +386,7 @@ public class basic extends AppCompatActivity
             .append(maxlon)
             .append(",")
             .append(maxlat);
+    Ion.getDefault(context).cancelAll(context);
 
     Log.i(TAG, bbox_param.toString());
 
@@ -397,6 +398,16 @@ public class basic extends AppCompatActivity
               @Override
               public void onCompleted(Exception ione, JsonArray result)
               {
+                int id = 0;
+                double lat = 0;
+                double lon = 0;
+                String img = null;
+                //double lon = item_json.get(4).getAsDouble();
+                String author = null;
+                String ref = null;
+                String note = null;
+                String license = null;
+                String tags = null;
 
                 if (ione != null) {
                   Toast.makeText(context, "ion json Error", Toast.LENGTH_LONG).show();
@@ -422,33 +433,59 @@ public class basic extends AppCompatActivity
                 while (it.hasNext()) {
                   JsonElement element = (JsonElement) it.next();
                   item_json = element.getAsJsonArray();
+
+                  Marker gp_marker = null;
+                  winfowindow wi = null;
+                  StringBuilder snippet = null;
+                  GeoPoint poi_loc = null;
+
+                  id = 0;
+
                   try {
-                    int id = item_json.get(0).getAsInt();
-                    double lat = item_json.get(1).getAsDouble();
-                    double lon = item_json.get(2).getAsDouble();
-                    String img = item_json.get(3).getAsString();
+                    id = item_json.get(0).getAsInt();
+                    lat = item_json.get(1).getAsDouble();
+                    lon = item_json.get(2).getAsDouble();
+                    img = item_json.get(3).getAsString();
                     //double lon = item_json.get(4).getAsDouble();
-                    String author = item_json.get(5).getAsString();
-                    String ref = item_json.get(6).getAsString();
-                    String note = item_json.get(7).getAsString();
-                    String license = item_json.get(8).getAsString();
-                    String tags = item_json.get(9).getAsString();
+                    //Log.i(TAG, "" + e.toString());
+                    author = item_json.get(5).getAsString();
+                    ref = item_json.get(6).getAsString();
+                    note = item_json.get(7).getAsString();
+                    license = item_json.get(8).getAsString();
+                    if (item_json.get(9).toString().equals("null")) {
+                      tags = "";
+                    } else {
+                      tags = item_json.get(9).getAsString();
+                    }
+                  } catch (Exception e) {
+                    Log.e(TAG, "exception parsing json " + e.toString());
+                    continue;
+                  }
 
-                    points.add(new LabelledGeoPoint(lat, lon, "gp " + id + " " + ref));
+                  if (id == 0) {
+                    Log.e(TAG, "id is 0 which is wrong");
+                    continue;
+                  }
 
-                    GeoPoint poi_loc = new GeoPoint(lat, lon);
+                  points.add(new LabelledGeoPoint(lat, lon, "gp " + id + " " + ref));
 
-                    //final
-                    Marker gp_marker = new Marker(map);
-                    winfowindow wi = new winfowindow(R.layout.cluster_bubble, map);
+                  poi_loc = new GeoPoint(lat, lon);
 
-                    final StringBuilder snippet = new StringBuilder();
+                  gp_marker = new Marker(map);
+                  wi = new winfowindow(R.layout.cluster_bubble, map);
 
+                  snippet = new StringBuilder();
+                  try {
                     snippet.append("<html><body>");
-                    snippet.append(
-                            "<img src='http://api.openstreetmap.social/p/phpThumb.php?h=150&src=http://api.openstreetmap.social/").append(
-                            img).append("'>");
                     snippet.append("<a href='https://api.openstreetmap.social/").append(img).append(
+                            "'>");
+                    snippet.append(
+                            "<img height='150' src='http://api.openstreetmap.social/p/phpThumb.php?h=150&src=http://api.openstreetmap.social/").append(
+                            img).append("'>");
+                    snippet.append("</a> <br>");
+
+                    snippet.append("<a href='https://api.openstreetmap.social/table/id/").append(
+                            id).append(
                             "'>id ").append(id);
                     snippet.append("</a><br>");
                     snippet.append("<ul>");
@@ -459,7 +496,11 @@ public class basic extends AppCompatActivity
                     snippet.append("</ul>");
                     snippet.append("<h3>tags:</h3>").append(tags);
                     snippet.append("</body></html>");
+                  } catch (Exception e) {
+                    Log.e(TAG, "exception setting " + e.toString());
+                  }
 
+                  try {
                     wi.set_text("Guidepost id " + id);
                     wi.set_html(snippet.toString());
                     gp_marker.setInfoWindow(wi);
@@ -472,29 +513,14 @@ public class basic extends AppCompatActivity
                     gp_marker.setIcon(d_poi_icon);
                     //gp_marker.setImage(d_poi_icon);
 
-/*                    Ion.with(context)
-                       .load("http://api.openstreetmap.social/p/phpThumb.php?h=150&src=http://api.openstreetmap.social/" + img)
-//                            .load("http://api.openstreetmap.social/" + img)
-                       .withBitmap()
-                       .asBitmap()
-                       .setCallback(new FutureCallback<Bitmap>() {
-                         @Override
-                         public void onCompleted(Exception exception, Bitmap b) {
-                          Drawable d = new BitmapDrawable(getResources(), b);
-                          gp_marker.setImage(d);
-                         }
-                       });
-*/
                     gp_marker_cluster.add(gp_marker);
-                    map.invalidate();
+//                    map.invalidate();
                   } catch (Exception e) {
                     Log.e(TAG, "exception adding " + e.toString());
-
                   }
-
                 }
+                map.invalidate();
                 Log.i(TAG, "json done");
-
               }
             });
     Log.i(TAG, "after size " + gp_marker_cluster.get_size());
@@ -533,7 +559,10 @@ public class basic extends AppCompatActivity
       @Override
       public boolean onZoom(ZoomEvent event)
       {
-        Log.i(TAG, " onZoom level:" + event.getZoomLevel() +" ovrl size" + map.getOverlays().size());
+        Log.i(
+                TAG,
+                " onZoom level:" + event.getZoomLevel() + " ovrl size" + map.getOverlays().size()
+             );
         Log.i(TAG, "before size " + gp_marker_cluster.get_size());
         reload_guideposts();
         return false;
@@ -596,7 +625,8 @@ public class basic extends AppCompatActivity
     navigationView = findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 
-    d_cluster_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_poi_cluster, null);
+    d_cluster_icon = ResourcesCompat.getDrawable(
+            getResources(), R.drawable.marker_poi_cluster, null);
     d_poi_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.guidepost, null);
     b_cluster_icon = ((BitmapDrawable) d_cluster_icon).getBitmap();
   }
@@ -641,9 +671,11 @@ public class basic extends AppCompatActivity
       if (image_file != null) {
 
         try {
-          photoURI = FileProvider.getUriForFile(this,
-                                                "org.walley.guidepost",
-                                                image_file);
+          photoURI = FileProvider.getUriForFile(
+                  this,
+                  "org.walley.guidepost",
+                  image_file
+                                               );
         } catch (Exception e) {
           Log.e(TAG, "launch_camera(): error  " + e.toString());
         }

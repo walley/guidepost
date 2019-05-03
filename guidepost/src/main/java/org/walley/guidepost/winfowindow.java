@@ -41,6 +41,8 @@ public class winfowindow extends BasicInfoWindow
 {
 
   private static final String TAG = "GP-winfowindow";
+  String html_text;
+  WebView wv;
 
   protected Marker mMarkerRef; //reference to the Marker on which it is opened. Null if none.
 
@@ -90,7 +92,13 @@ public class winfowindow extends BasicInfoWindow
     }
     //handle image
 
-    WebView webView = mView.findViewById(R.id.cluster_bubble_webview);
+    wv = mView.findViewById(R.id.cluster_bubble_webview);
+    if (wv != null) {
+      wv.loadData(html_text, "text/html", "UTF-8");
+      Log.i(TAG, "html vewbview created");
+    } else {
+      Log.e(TAG, "set_html temp is null");
+    }
 
     ImageView imageView = (ImageView) mView.findViewById(R.id.bubble_image);
 
@@ -117,13 +125,7 @@ public class winfowindow extends BasicInfoWindow
 
   public void set_html(String t)
   {
-    WebView temp = mView.findViewById(R.id.cluster_bubble_webview);
-    if (temp != null) {
-      Log.i(TAG, "set_html:" + t + "... end");
-      temp.loadData(t, "text/html", "UTF-8");
-    } else {
-      Log.e(TAG, "set_html temp is null");
-    }
+    html_text = t;
   }
 
   @Override
@@ -132,8 +134,14 @@ public class winfowindow extends BasicInfoWindow
     super.onClose();
     mMarkerRef = null;
 
-    Log.w(TAG, "marker on close");
+    Log.i(TAG, "marker on close");
 
+    if (wv != null) {
+      wv.destroy();
+      Log.i(TAG, "vewbview destroyed");
+    } else {
+      Log.e(TAG, "webview is null");
+    }
 
     //by default, do nothing else
   }
