@@ -105,7 +105,7 @@ public class basic extends AppCompatActivity
   MyLocationNewOverlay location_overlay;
   NavigationView navigationView;
   //  RadiusMarkerClusterer gp_marker_cluster;
-  wclusterer gp_marker_cluster;
+  //wclusterer gp_marker_cluster;
   Toolbar toolbar;
   wlocation gps;
   String current_photo;
@@ -356,9 +356,8 @@ public class basic extends AppCompatActivity
     }
   }
 
-  private void create_gp_cluster_overlay()
+  private void create_gp_cluster_overlay(wclusterer gp_marker_cluster)
   {
-    gp_marker_cluster = new wclusterer(context);
     gp_marker_cluster.setIcon(b_cluster_icon);
     gp_marker_cluster.getTextPaint().setTextSize(12 * getResources().getDisplayMetrics().density);
     gp_marker_cluster.mAnchorV = Marker.ANCHOR_BOTTOM;
@@ -417,11 +416,16 @@ public class basic extends AppCompatActivity
 
                 try {
                   map.getOverlays().remove(gp_overlay_number);
+                  //actualy delete gp_marker_cluster
                 } catch (Exception e) {
                   Log.e(TAG, "cannot remove overlay" + e.toString());
                 }
 
-                create_gp_cluster_overlay();
+//remove old gp_marker_cluster somehow?
+
+                wclusterer gp_marker_cluster = new wclusterer(context);
+                ;
+                create_gp_cluster_overlay(gp_marker_cluster);
 
                 JsonArray item_json;
                 // do stuff with the result or error
@@ -467,8 +471,6 @@ public class basic extends AppCompatActivity
                     continue;
                   }
 
-                  points.add(new LabelledGeoPoint(lat, lon, "gp " + id + " " + ref));
-
                   poi_loc = new GeoPoint(lat, lon);
 
                   gp_marker = new Marker(map);
@@ -507,14 +509,10 @@ public class basic extends AppCompatActivity
 
                     gp_marker.setTitle("Guidepost id " + id);
                     gp_marker.setSubDescription("" + id);
-
-//                    gp_marker.setSnippet(snippet);
                     gp_marker.setPosition(poi_loc);
                     gp_marker.setIcon(d_poi_icon);
                     //gp_marker.setImage(d_poi_icon);
-
                     gp_marker_cluster.add(gp_marker);
-//                    map.invalidate();
                   } catch (Exception e) {
                     Log.e(TAG, "exception adding " + e.toString());
                   }
@@ -523,7 +521,6 @@ public class basic extends AppCompatActivity
                 Log.i(TAG, "json done");
               }
             });
-    Log.i(TAG, "after size " + gp_marker_cluster.get_size());
   }
 
   private void create_map()
@@ -551,7 +548,6 @@ public class basic extends AppCompatActivity
       public boolean onScroll(ScrollEvent event)
       {
         Log.i(TAG, "onScroll " + event.getX() + "," + event.getY());
-        Log.i(TAG, "before size " + gp_marker_cluster.get_size());
         reload_guideposts();
         return false;
       }
@@ -563,13 +559,12 @@ public class basic extends AppCompatActivity
                 TAG,
                 " onZoom level:" + event.getZoomLevel() + " ovrl size" + map.getOverlays().size()
              );
-        Log.i(TAG, "before size " + gp_marker_cluster.get_size());
         reload_guideposts();
         return false;
       }
     }, 200));
 
-    create_gp_cluster_overlay();
+//    create_gp_cluster_overlay(wclusterer);
   }
 
   void move_to_default_position()

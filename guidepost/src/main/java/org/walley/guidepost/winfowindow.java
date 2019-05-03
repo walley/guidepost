@@ -19,29 +19,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * {@link org.osmdroid.views.overlay.infowindow.MarkerInfoWindow} is the default
- * implementation of {@link org.osmdroid.views.overlay.infowindow.InfoWindow} for a
- * {@link org.osmdroid.views.overlay.Marker}.
- * <p>
- * It handles
- * <p>
- * R.id.bubble_title          = {@link org.osmdroid.views.overlay.OverlayWithIW#getTitle()},
- * R.id.bubble_subdescription = {@link org.osmdroid.views.overlay.OverlayWithIW#getSubDescription()},
- * R.id.bubble_description    = {@link org.osmdroid.views.overlay.OverlayWithIW#getSnippet()},
- * R.id.bubble_image          = {@link org.osmdroid.views.overlay.Marker#getImage()}
- * <p>
- * Description and sub-description interpret HTML tags (in the limits of the Html.fromHtml(String) API).
- * Clicking on the bubble will close it.
- *
- * <img alt="Class diagram around Marker class" width="686" height="413" src='./doc-files/marker-infowindow-classes.png' />
- *
- * @author M.Kergall
- */
+ author M.Kergall
+ **/
 public class winfowindow extends BasicInfoWindow
 {
 
   private static final String TAG = "GP-winfowindow";
   String html_text;
+  TextView tv;
+  String text;
   WebView wv;
 
   protected Marker mMarkerRef; //reference to the Marker on which it is opened. Null if none.
@@ -56,7 +42,6 @@ public class winfowindow extends BasicInfoWindow
   {
     super(layoutResId, mapView);
     //mMarkerRef = null;
-    Log.d(TAG, "winfowindow contructor");
   }
 
   /**
@@ -92,6 +77,13 @@ public class winfowindow extends BasicInfoWindow
     }
     //handle image
 
+    tv = ((TextView) mView.findViewById(R.id.cluster_bubble_text));
+    if (tv != null) {
+      tv.setText(text);
+    } else {
+      Log.e(TAG, "textview is null");
+    }
+
     wv = mView.findViewById(R.id.cluster_bubble_webview);
     if (wv != null) {
       wv.loadData(html_text, "text/html", "UTF-8");
@@ -113,14 +105,7 @@ public class winfowindow extends BasicInfoWindow
 
   public void set_text(String t)
   {
-    TextView temp = ((TextView) mView.findViewById(R.id.cluster_bubble_text));
-    if (temp != null) {
-      temp.setText(t);
-      Log.i(TAG, "settext:" + t);
-
-    } else {
-      Log.e(TAG, "settext: textview is null");
-    }
+    text = t;
   }
 
   public void set_html(String t)
