@@ -1,78 +1,35 @@
 package org.walley.guidepost;
 
-import android.content.Context;
-
-import org.osmdroid.api.IMapView;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayWithIW;
-import org.osmdroid.views.overlay.infowindow.BasicInfoWindow;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
+import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
-import android.graphics.drawable.Drawable;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebView;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-/**
- * author M.Kergall
- **/
-public class winfowindow extends BasicInfoWindow
+
+public class winfowindow extends MarkerInfoWindow
 {
 
   private static final String TAG = "GP-winfowindow";
 
-  protected Marker mMarkerRef; //reference to the Marker on which it is opened. Null if none.
-
-  /**
-   * @param layoutResId layout that must contain these ids: bubble_title,bubble_description,
-   *                    bubble_subdescription, bubble_image
-   * @param mapView
-   */
-
   public winfowindow(int layoutResId, MapView mapView)
   {
     super(layoutResId, mapView);
-    mMarkerRef = null;
-  }
-
-  /**
-   * reference to the Marker on which it is opened. Null if none.
-   *
-   * @return
-   */
-  public Marker getMarkerReference()
-  {
-    return mMarkerRef;
   }
 
   @Override
   public void onOpen(Object item)
   {
-
-    // super.onOpen(item);
     OverlayWithIW overlay = (OverlayWithIW) item;
     String title = overlay.getTitle();
     if (title == null) {
       title = "";
     }
-    if (mView == null) {
-      Log.w(IMapView.LOGTAG, "Error trapped, BasicInfoWindow.open, mView is null!");
-      return;
-    }
 
     Log.w(TAG, "marker onopen");
-
-    mMarkerRef = (Marker) item;
-    if (mView == null) {
-      Log.w(TAG, "InfoWindow.open, mView is null!");
-      return;
-    }
-    //handle image
 
     TextView tv = ((TextView) mView.findViewById(R.id.cluster_bubble_text));
     if (tv != null) {
@@ -91,34 +48,25 @@ public class winfowindow extends BasicInfoWindow
       Log.e(TAG, "set_html temp is null");
     }
 
-    ImageView imageView = (ImageView) mView.findViewById(R.id.bubble_image);
-
-    Drawable image = mMarkerRef.getImage();
-    if (image != null) {
-      imageView.setImageDrawable(image); //or setBackgroundDrawable(image)?
-      imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-      imageView.setVisibility(View.VISIBLE);
-    } else
-      imageView.setVisibility(View.GONE);
   }
 
   @Override
   public void onClose()
   {
-    super.onClose();
-    mMarkerRef = null;
+  }
 
-    Log.i(TAG, "marker on close");
+/*      Log.i(TAG, "marker on close");
 
     WebView wv = mView.findViewById(R.id.cluster_bubble_webview);
 
     if (wv != null) {
       wv.loadUrl("about:blank");
-      Log.i(TAG, "vewbview destroyed");
+      Log.i(TAG, "vewbview cleared");
     } else {
       Log.e(TAG, "webview is null");
     }
 
   }
+  */
 }
 

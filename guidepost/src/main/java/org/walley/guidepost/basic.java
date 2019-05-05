@@ -365,7 +365,7 @@ public class basic extends AppCompatActivity
 //  for (int i=0; i < map.getOverlays().size(); i++) {
 //    map.getOverlays().get(i)...remove();
 //  }
-//  map.getOverlays().clear();
+    map.getOverlays().clear();
 
     Log.i(TAG, "number of overlays from manager: " + map.getOverlayManager().size());
     Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
@@ -528,20 +528,16 @@ public class basic extends AppCompatActivity
 
                   try {
 //                    wi.set_text("Guidepost id " + id);
-//                    wi.set_html(snippet.toString());
                     gp_marker.setSnippet(snippet.toString());
                     gp_marker.setInfoWindow(wi);
 
                     gp_marker.setTitle("Guidepost id " + id);
                     gp_marker.setSubDescription("" + id);
                     gp_marker.setPosition(poi_loc);
-                    poi_loc = null;
                     gp_marker.setIcon(d_poi_icon);
                     //gp_marker.setImage(d_poi_icon);
                     //gp_marker_cluster.add(gp_marker);
                     map.getOverlays().add(gp_marker);
-                    //gp_marker.remove(map);
-
                     ids_added++;
                   } catch (Exception e) {
                     Log.e(TAG, "exception adding " + e.toString());
@@ -583,7 +579,6 @@ public class basic extends AppCompatActivity
         reload_guideposts();
         map.invalidate();
         return false;
-//return true;
       }
 
       @Override
@@ -620,7 +615,6 @@ public class basic extends AppCompatActivity
     map_controller.setZoom(13);
     map_controller.zoomTo(13.0);
     map_controller.setCenter(current_point);
-    //map_controller.animateTo(current_point);
   }
 
   private void create_ui()
