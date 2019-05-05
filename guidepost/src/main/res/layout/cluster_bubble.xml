@@ -31,7 +31,7 @@
         android:layout_gravity="start"
         android:layout_weight="1"
         android:maxEms="17"
-        android:text="Cluster"
+        android:text="Title"
         android:textColor="#000000"/>
 
       <Button
@@ -58,6 +58,6 @@
       android:id="@+id/cluster_bubble_webview"
       android:layout_width="300px"
       android:layout_height="400px"
-/>
+      />
   </LinearLayout>
 </LinearLayout>

@@ -19,16 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- author M.Kergall
+ * author M.Kergall
  **/
 public class winfowindow extends BasicInfoWindow
 {
 
   private static final String TAG = "GP-winfowindow";
-  String html_text;
-  TextView tv;
-  String text;
-  WebView wv;
 
   protected Marker mMarkerRef; //reference to the Marker on which it is opened. Null if none.
 
@@ -41,7 +37,7 @@ public class winfowindow extends BasicInfoWindow
   public winfowindow(int layoutResId, MapView mapView)
   {
     super(layoutResId, mapView);
-    //mMarkerRef = null;
+    mMarkerRef = null;
   }
 
   /**
@@ -58,11 +54,12 @@ public class winfowindow extends BasicInfoWindow
   public void onOpen(Object item)
   {
 
-    //super.onOpen(item);
+    // super.onOpen(item);
     OverlayWithIW overlay = (OverlayWithIW) item;
     String title = overlay.getTitle();
-    if (title == null)
+    if (title == null) {
       title = "";
+    }
     if (mView == null) {
       Log.w(IMapView.LOGTAG, "Error trapped, BasicInfoWindow.open, mView is null!");
       return;
@@ -77,16 +74,18 @@ public class winfowindow extends BasicInfoWindow
     }
     //handle image
 
-    tv = ((TextView) mView.findViewById(R.id.cluster_bubble_text));
+    TextView tv = ((TextView) mView.findViewById(R.id.cluster_bubble_text));
     if (tv != null) {
-      tv.setText(text);
+      tv.setText("test");
     } else {
       Log.e(TAG, "textview is null");
     }
 
-    wv = mView.findViewById(R.id.cluster_bubble_webview);
+    String html_text = overlay.getSnippet();
+    WebView wv = mView.findViewById(R.id.cluster_bubble_webview);
     if (wv != null) {
       wv.loadData(html_text, "text/html", "UTF-8");
+      Log.i(TAG, "html:" + html_text);
       Log.i(TAG, "html vewbview created");
     } else {
       Log.e(TAG, "set_html temp is null");
@@ -103,16 +102,6 @@ public class winfowindow extends BasicInfoWindow
       imageView.setVisibility(View.GONE);
   }
 
-  public void set_text(String t)
-  {
-    text = t;
-  }
-
-  public void set_html(String t)
-  {
-    html_text = t;
-  }
-
   @Override
   public void onClose()
   {
@@ -121,15 +110,15 @@ public class winfowindow extends BasicInfoWindow
 
     Log.i(TAG, "marker on close");
 
+    WebView wv = mView.findViewById(R.id.cluster_bubble_webview);
+
     if (wv != null) {
-      wv.destroy();
+      wv.loadUrl("about:blank");
       Log.i(TAG, "vewbview destroyed");
     } else {
       Log.e(TAG, "webview is null");
     }
 
-    //by default, do nothing else
   }
-
 }
 

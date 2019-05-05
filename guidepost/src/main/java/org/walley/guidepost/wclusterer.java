@@ -64,6 +64,19 @@ public class wclusterer extends MarkerClusterer {
     return this.mItems.size();
   }
 
+  public void clear_stuff(MapView mapView)
+  {
+    for (int i = 0; i < this.mItems.size(); i++) {
+      this.mItems.get(i).onDetach(mapView);
+    }
+    this.mItems.clear();
+
+    for (int i = 0; i < this.mClusters.size(); i++) {
+      this.mClusters.get(i).setMarker(null);
+    }
+    this.mClusters.clear();
+  }
+
   public void setRadius(int radius) {
     this.mRadiusInPixels = radius;
   }
@@ -128,9 +141,9 @@ public Marker build_cluster_marker(StaticCluster cluster, MapView mapView, Strin
   {
     Marker m = new Marker(mapView);
     m.setPosition(cluster.getPosition());
-    winfowindow wi = new winfowindow(R.layout.cluster_bubble,mapView);
-    wi.set_text("text");
-    wi.set_html("<html><body>"+bubble_text+"</body></html>");
+    final winfowindow wi = new winfowindow(R.layout.cluster_bubble, mapView);
+//    wi.set_text("text");
+//    wi.set_html("<html><body>"+bubble_text+"</body></html>");
     m.setInfoWindow(wi);
     m.setAnchor(this.mAnchorU, this.mAnchorV);
     Bitmap finalIcon = Bitmap.createBitmap(this.mClusterIcon.getWidth(), this.mClusterIcon.getHeight(), this.mClusterIcon.getConfig());
@@ -145,24 +158,27 @@ public Marker build_cluster_marker(StaticCluster cluster, MapView mapView, Strin
 
   public void renderer(ArrayList<StaticCluster> clusters, Canvas canvas, MapView mapView)
   {
-    String t = "";
-    Iterator var4 = clusters.iterator();
-    while (var4.hasNext()) {
-      t = "";
-      StaticCluster cluster = (StaticCluster)var4.next();
+    Iterator iter = clusters.iterator();
+    while (iter.hasNext()) {
+      final StringBuilder t = new StringBuilder();
+      StaticCluster cluster = (StaticCluster) iter.next();
+
       if (cluster.getSize() == 1) {
         cluster.setMarker(cluster.getItem(0));
       } else {
-
         for (int i = 0; i < cluster.getSize(); i++) {
           String id = cluster.getItem(i).getSubDescription();
-          t += i + ": <a href='http://api.openstreetmap.social/table/id/" + id + "'>" + id + "</a><br>\n";
+          t.append(i);
+          t.append(": <a href='http://api.openstreetmap.social/table/id/");
+          t.append(id);
+          t.append("'>");
+          t.append(id);
+          t.append("</a><br>\n");
         }
-        Log.i(TAG, "item:" + t);
-
-        Marker m = this.build_cluster_marker(cluster, mapView, t);
+        Marker m = this.build_cluster_marker(cluster, mapView, t.toString());
         cluster.setMarker(m);
       }
+
     }
 
   }

@@ -100,15 +100,14 @@ public class basic extends AppCompatActivity
   GeoPoint current_point;
   IMapController map_controller;
   int gp_overlay_number;
-  List<IGeoPoint> points = new ArrayList<>();
   MapView map = null;
   MyLocationNewOverlay location_overlay;
   NavigationView navigationView;
-  //  RadiusMarkerClusterer gp_marker_cluster;
-  //wclusterer gp_marker_cluster;
   Toolbar toolbar;
   wlocation gps;
   String current_photo;
+  wclusterer gp_marker_cluster;
+  winfowindow wi;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -118,7 +117,10 @@ public class basic extends AppCompatActivity
 
     Ion.getDefault(context).configure().setLogging(TAG, Log.INFO);
     request_permission();
+
     create_ui();
+
+    gp_marker_cluster = new wclusterer(context);
 
     if (ActivityCompat.checkSelfPermission(
             this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
@@ -356,8 +358,38 @@ public class basic extends AppCompatActivity
     }
   }
 
-  private void create_gp_cluster_overlay(wclusterer gp_marker_cluster)
+  private void remove_overlays()
   {
+    Log.i(TAG, "number of overlays from manager: " + map.getOverlayManager().size());
+    Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
+//  for (int i=0; i < map.getOverlays().size(); i++) {
+//    map.getOverlays().get(i)...remove();
+//  }
+//  map.getOverlays().clear();
+
+    Log.i(TAG, "number of overlays from manager: " + map.getOverlayManager().size());
+    Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
+  }
+
+  //  private void create_gp_cluster_overlay(wclusterer gp_marker_cluster)
+  private void create_gp_cluster_overlay()
+  {
+    Log.i(TAG, "number of overlays from manager: " + map.getOverlayManager().size());
+    Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
+
+    Log.i(TAG, "gp_overlay_number: " + gp_overlay_number);
+
+    Log.i(TAG, "clearing markers");
+//    gp_marker_cluster.clear_stuff(map);
+    Log.i(TAG, "done");
+
+    try {
+      map.getOverlays().remove(gp_overlay_number);
+      map.invalidate();
+    } catch (Exception e) {
+      Log.e(TAG, "cannot remove overlay" + e.toString());
+    }
+
     gp_marker_cluster.setIcon(b_cluster_icon);
     gp_marker_cluster.getTextPaint().setTextSize(12 * getResources().getDisplayMetrics().density);
     gp_marker_cluster.mAnchorV = Marker.ANCHOR_BOTTOM;
@@ -366,6 +398,9 @@ public class basic extends AppCompatActivity
 
     map.getOverlays().add(gp_marker_cluster);
     gp_overlay_number = map.getOverlays().size() - 1;
+    Log.i(TAG, "gp_overlay_number: " + gp_overlay_number);
+    Log.i(TAG, "number of overlays from manager: " + map.getOverlayManager().size());
+    Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
   }
 
 
@@ -414,34 +449,21 @@ public class basic extends AppCompatActivity
                   return;
                 }
 
-                try {
-                  map.getOverlays().remove(gp_overlay_number);
-                  //actualy delete gp_marker_cluster
-                } catch (Exception e) {
-                  Log.e(TAG, "cannot remove overlay" + e.toString());
-                }
-
-//remove old gp_marker_cluster somehow?
-
-                wclusterer gp_marker_cluster = new wclusterer(context);
-                ;
-                create_gp_cluster_overlay(gp_marker_cluster);
-
+//                create_gp_cluster_overlay(gp_marker_cluster);
+//                create_gp_cluster_overlay();
+                remove_overlays();
                 JsonArray item_json;
                 // do stuff with the result or error
                 Log.i(TAG, "bbox json loaded ");
                 if (result == null) {
                   Log.i(TAG, "bbox json is null");
                 }
+
                 Iterator it = result.iterator();
+                int ids_added = 0;
                 while (it.hasNext()) {
                   JsonElement element = (JsonElement) it.next();
                   item_json = element.getAsJsonArray();
-
-                  Marker gp_marker = null;
-                  winfowindow wi = null;
-                  StringBuilder snippet = null;
-                  GeoPoint poi_loc = null;
 
                   id = 0;
 
@@ -451,11 +473,14 @@ public class basic extends AppCompatActivity
                     lon = item_json.get(2).getAsDouble();
                     img = item_json.get(3).getAsString();
                     //double lon = item_json.get(4).getAsDouble();
-                    //Log.i(TAG, "" + e.toString());
                     author = item_json.get(5).getAsString();
-                    ref = item_json.get(6).getAsString();
-                    note = item_json.get(7).getAsString();
+                    ref = item_json.get(6).toString();
+                    if (ref.equals("null")) {
+                      ref = "";
+                    }
+                    //note = item_json.get(7).getAsString();
                     license = item_json.get(8).getAsString();
+
                     if (item_json.get(9).toString().equals("null")) {
                       tags = "";
                     } else {
@@ -471,12 +496,8 @@ public class basic extends AppCompatActivity
                     continue;
                   }
 
-                  poi_loc = new GeoPoint(lat, lon);
+                  final StringBuilder snippet = new StringBuilder();
 
-                  gp_marker = new Marker(map);
-                  wi = new winfowindow(R.layout.cluster_bubble, map);
-
-                  snippet = new StringBuilder();
                   try {
                     snippet.append("<html><body>");
                     snippet.append("<a href='https://api.openstreetmap.social/").append(img).append(
@@ -502,23 +523,32 @@ public class basic extends AppCompatActivity
                     Log.e(TAG, "exception setting " + e.toString());
                   }
 
+                  GeoPoint poi_loc = new GeoPoint(lat, lon);
+                  final Marker gp_marker = new Marker(map);
+
                   try {
-                    wi.set_text("Guidepost id " + id);
-                    wi.set_html(snippet.toString());
+//                    wi.set_text("Guidepost id " + id);
+//                    wi.set_html(snippet.toString());
+                    gp_marker.setSnippet(snippet.toString());
                     gp_marker.setInfoWindow(wi);
 
                     gp_marker.setTitle("Guidepost id " + id);
                     gp_marker.setSubDescription("" + id);
                     gp_marker.setPosition(poi_loc);
+                    poi_loc = null;
                     gp_marker.setIcon(d_poi_icon);
                     //gp_marker.setImage(d_poi_icon);
-                    gp_marker_cluster.add(gp_marker);
+                    //gp_marker_cluster.add(gp_marker);
+                    map.getOverlays().add(gp_marker);
+                    //gp_marker.remove(map);
+
+                    ids_added++;
                   } catch (Exception e) {
                     Log.e(TAG, "exception adding " + e.toString());
                   }
                 }
+                Log.i(TAG, "json done, markers added " + ids_added);
                 map.invalidate();
-                Log.i(TAG, "json done");
               }
             });
   }
@@ -530,6 +560,8 @@ public class basic extends AppCompatActivity
 
     map = findViewById(R.id.map);
     map_controller = map.getController();
+
+    wi = new winfowindow(R.layout.cluster_bubble, map);
 
     location_overlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), map);
     location_overlay.enableMyLocation();
@@ -549,16 +581,15 @@ public class basic extends AppCompatActivity
       {
         Log.i(TAG, "onScroll " + event.getX() + "," + event.getY());
         reload_guideposts();
+        map.invalidate();
         return false;
+//return true;
       }
 
       @Override
       public boolean onZoom(ZoomEvent event)
       {
-        Log.i(
-                TAG,
-                " onZoom level:" + event.getZoomLevel() + " ovrl size" + map.getOverlays().size()
-             );
+        Log.i(TAG, " onZoom level:" + event.getZoomLevel());
         reload_guideposts();
         return false;
       }
