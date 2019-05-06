@@ -53,6 +53,7 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 
+import org.apache.commons.io.IOUtils;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -72,8 +73,10 @@ import org.osmdroid.views.overlay.simplefastpoint.LabelledGeoPoint;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -94,6 +97,7 @@ public class basic extends AppCompatActivity
   Context context = this;
   Drawable d_cluster_icon;
   Drawable d_poi_icon;
+  Drawable d_redmark_icon;
   DrawerLayout drawer;
   FloatingActionButton fab;
   GeoPoint start_point;
@@ -464,7 +468,7 @@ public class basic extends AppCompatActivity
                 while (it.hasNext()) {
                   JsonElement element = (JsonElement) it.next();
                   item_json = element.getAsJsonArray();
-
+                  Log.i(TAG, "xxx " + element.toString());
                   id = 0;
 
                   try {
@@ -474,11 +478,20 @@ public class basic extends AppCompatActivity
                     img = item_json.get(3).getAsString();
                     //double lon = item_json.get(4).getAsDouble();
                     author = item_json.get(5).getAsString();
-                    ref = item_json.get(6).toString();
-                    if (ref.equals("null")) {
+
+                    if (item_json.get(6).toString().equals("null")) {
                       ref = "";
+                    } else {
+                      ref = item_json.get(6).getAsString();
                     }
-                    //note = item_json.get(7).getAsString();
+
+                    if (item_json.get(7).toString().equals("null")) {
+                      note = "note not found";
+                    } else {
+                      note = item_json.get(7).getAsString();
+                      note = note.equals("") ? note = "note not found" : note;
+                    }
+
                     license = item_json.get(8).getAsString();
 
                     if (item_json.get(9).toString().equals("null")) {
@@ -498,8 +511,22 @@ public class basic extends AppCompatActivity
 
                   final StringBuilder snippet = new StringBuilder();
 
+
                   try {
-                    snippet.append("<html><body>");
+                    InputStream is = getResources().openRawResource(R.raw.colapsible);
+                    String colapsible = IOUtils.toString(is);
+                    IOUtils.closeQuietly(is);
+                    colapsible = colapsible.replace("[*note*]", note);
+
+                    snippet.append("<!DOCTYPE html>");
+                    snippet.append("<html lang='en'>");
+
+                    snippet.append("<head>");
+                    snippet.append(
+                            "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
+                    snippet.append("</head>");
+
+                    snippet.append("<body>");
                     snippet.append("<a href='https://api.openstreetmap.social/").append(img).append(
                             "'>");
                     snippet.append(
@@ -517,6 +544,7 @@ public class basic extends AppCompatActivity
                     snippet.append("<li>ref:").append(ref);
                     snippet.append("<li>license:").append(license);
                     snippet.append("</ul>");
+                    snippet.append(colapsible);
                     snippet.append("<h3>tags:</h3>").append(tags);
                     snippet.append("</body></html>");
                   } catch (Exception e) {
@@ -534,7 +562,21 @@ public class basic extends AppCompatActivity
                     gp_marker.setTitle("Guidepost id " + id);
                     gp_marker.setSubDescription("" + id);
                     gp_marker.setPosition(poi_loc);
+                    String[] tags_array = tags.split(";");
+
                     gp_marker.setIcon(d_poi_icon);
+                    for (String s : tags_array) {
+                      if (s.contains("infotabule")) {
+                        gp_marker.setIcon(d_redmark_icon);
+                      }
+                    }
+
+/*                    if (Arrays.stream(tags_array).anyMatch("infotabule"::equals)) {
+                      gp_marker.setIcon(d_redmark_icon);
+                    } else {
+                      gp_marker.setIcon(d_poi_icon);
+                    }
+                    */
                     //gp_marker.setImage(d_poi_icon);
                     //gp_marker_cluster.add(gp_marker);
                     map.getOverlays().add(gp_marker);
@@ -648,6 +690,8 @@ public class basic extends AppCompatActivity
     d_cluster_icon = ResourcesCompat.getDrawable(
             getResources(), R.drawable.marker_poi_cluster, null);
     d_poi_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.guidepost, null);
+    d_redmark_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marked_trail_red, null);
+
     b_cluster_icon = ((BitmapDrawable) d_cluster_icon).getBitmap();
   }
 

@@ -41,7 +41,7 @@ public class winfowindow extends MarkerInfoWindow
     String html_text = overlay.getSnippet();
     WebView wv = mView.findViewById(R.id.cluster_bubble_webview);
     if (wv != null) {
-      wv.loadData(html_text, "text/html", "UTF-8");
+      wv.loadData(html_text, "text/html; charset=utf-8", "utf-8");
       Log.i(TAG, "html:" + html_text);
       Log.i(TAG, "html vewbview created");
     } else {
@@ -53,9 +53,7 @@ public class winfowindow extends MarkerInfoWindow
   @Override
   public void onClose()
   {
-  }
-
-/*      Log.i(TAG, "marker on close");
+    Log.i(TAG, "marker on close");
 
     WebView wv = mView.findViewById(R.id.cluster_bubble_webview);
 
@@ -65,8 +63,6 @@ public class winfowindow extends MarkerInfoWindow
     } else {
       Log.e(TAG, "webview is null");
     }
-
   }
-  */
 }
 
