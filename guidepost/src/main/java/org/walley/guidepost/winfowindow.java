@@ -23,20 +23,31 @@ public class winfowindow extends MarkerInfoWindow
   @Override
   public void onOpen(Object item)
   {
-    OverlayWithIW overlay = (OverlayWithIW) item;
-    String title = overlay.getTitle();
-    if (title == null) {
-      title = "";
-    }
-
     Log.w(TAG, "marker onopen");
 
-    TextView tv = ((TextView) mView.findViewById(R.id.cluster_bubble_text));
-    if (tv != null) {
-      tv.setText("test");
-    } else {
-      Log.e(TAG, "textview is null");
+    OverlayWithIW overlay = (OverlayWithIW) item;
+
+    TextView tv = ((TextView) mView.findViewById(R.id.bubble_title));
+    String title = overlay.getTitle();
+    if (title != null) {
+      if (tv != null) {
+        tv.setText(title);
+      } else {
+        Log.e(TAG, "textview is null");
+      }
     }
+
+    TextView tv2 = (TextView) mView.findViewById(R.id.cluster_bubble_text);
+    String t2 = overlay.getSubDescription();
+    if (t2 != null) {
+      if (tv2 != null) {
+        tv2.setText(t2);
+      } else {
+        Log.e(TAG, "tv2 is null");
+      }
+    }
+
+
 
     String html_text = overlay.getSnippet();
     WebView wv = mView.findViewById(R.id.cluster_bubble_webview);
