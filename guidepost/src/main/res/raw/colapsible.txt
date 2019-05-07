@@ -1,0 +1,17 @@
+<style type="text/css">
+.row {vertical-align: top; height:auto !important;}
+.list {display: none;}
+.show {display: none;}
+.hide:target + .show {display: inline;}
+.hide:target {display: none;}
+.hide:target ~ .list {display:inline;}
+</style>
+
+<div class="row">
+<a href="#hide1" class="hide" id="hide1">[+] NOTE</a>
+<a href="#show1" class="show" id="show1">[-] NOTE</a>
+<br>
+<div class="list">
+[*note*]
+</div>
+</div>

@@ -512,6 +512,7 @@ public class basic extends AppCompatActivity
                   }
 
                   final StringBuilder snippet = new StringBuilder();
+                  String[] tags_array = tags.split(";");
 
 
                   try {
@@ -547,7 +548,20 @@ public class basic extends AppCompatActivity
                     snippet.append("<li>license:").append(license);
                     snippet.append("</ul>");
                     snippet.append(colapsible);
-                    snippet.append("<h3>tags:</h3>").append(tags);
+
+                    InputStream is_tags = getResources().openRawResource(R.raw.tags);
+                    String css_tags = IOUtils.toString(is_tags);
+                    IOUtils.closeQuietly(is_tags);
+
+                    snippet.append("<h3>tags:</h3>").append(css_tags);
+                    snippet.append("<p>");
+                    for (String s : tags_array) {
+                      snippet.append("<span class='t'>");
+                      snippet.append(s);
+                      snippet.append("</span>");
+                    }
+                    snippet.append("</p>");
+
                     snippet.append("</body></html>");
                   } catch (Exception e) {
                     Log.e(TAG, "exception setting " + e.toString());
@@ -563,7 +577,7 @@ public class basic extends AppCompatActivity
                     gp_marker.setSubDescription("" + id);
                     gp_marker.setPosition(poi_loc);
 
-                    String[] tags_array = tags.split(";");
+//                    String[] tags_array = tags.split(";");
                     for (String s : tags_array) {
                       if (s.contains("cyklo")) {
                         gp_marker.setIcon(d_bicycle_icon);
