@@ -98,6 +98,8 @@ public class basic extends AppCompatActivity
   Drawable d_cluster_icon;
   Drawable d_poi_icon;
   Drawable d_redmark_icon;
+  Drawable d_board_icon;
+  Drawable d_bicycle_icon;
   DrawerLayout drawer;
   FloatingActionButton fab;
   GeoPoint start_point;
@@ -468,7 +470,7 @@ public class basic extends AppCompatActivity
                 while (it.hasNext()) {
                   JsonElement element = (JsonElement) it.next();
                   item_json = element.getAsJsonArray();
-                  Log.i(TAG, "xxx " + element.toString());
+                  //Log.i(TAG, "xxx " + element.toString());
                   id = 0;
 
                   try {
@@ -555,19 +557,20 @@ public class basic extends AppCompatActivity
                   final Marker gp_marker = new Marker(map);
 
                   try {
-//                    wi.set_text("Guidepost id " + id);
                     gp_marker.setSnippet(snippet.toString());
                     gp_marker.setInfoWindow(wi);
-
                     gp_marker.setTitle("Guidepost id " + id);
                     gp_marker.setSubDescription("" + id);
                     gp_marker.setPosition(poi_loc);
-                    String[] tags_array = tags.split(";");
 
-                    gp_marker.setIcon(d_poi_icon);
+                    String[] tags_array = tags.split(";");
                     for (String s : tags_array) {
-                      if (s.contains("infotabule")) {
-                        gp_marker.setIcon(d_redmark_icon);
+                      if (s.contains("cyklo")) {
+                        gp_marker.setIcon(d_bicycle_icon);
+                      } else if (s.contains("infotabule")) {
+                        gp_marker.setIcon(d_board_icon);
+                      } else {
+                        gp_marker.setIcon(d_poi_icon);
                       }
                     }
 
@@ -691,6 +694,8 @@ public class basic extends AppCompatActivity
             getResources(), R.drawable.marker_poi_cluster, null);
     d_poi_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.guidepost, null);
     d_redmark_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marked_trail_red, null);
+    d_board_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.board, null);
+    d_bicycle_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.bicycle, null);
 
     b_cluster_icon = ((BitmapDrawable) d_cluster_icon).getBitmap();
   }
