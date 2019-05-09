@@ -98,6 +98,7 @@ public class basic extends AppCompatActivity
   Drawable d_cluster_icon;
   Drawable d_poi_icon;
   Drawable d_redmark_icon;
+  Drawable d_greenmark_icon;
   Drawable d_board_icon;
   Drawable d_bicycle_icon;
   DrawerLayout drawer;
@@ -372,6 +373,7 @@ public class basic extends AppCompatActivity
 //    map.getOverlays().get(i)...remove();
 //  }
     map.getOverlays().clear();
+    map.getOverlays().add(location_overlay);
 
     Log.i(TAG, "number of overlays from manager: " + map.getOverlayManager().size());
     Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
@@ -419,6 +421,7 @@ public class basic extends AppCompatActivity
     double maxlat = bbox.getActualNorth();
     double minlon = bbox.getLonWest();
     double maxlon = bbox.getLonEast();
+
     bbox_param.append(minlon)
             .append(",")
             .append(minlat)
@@ -442,7 +445,6 @@ public class basic extends AppCompatActivity
                 double lat = 0;
                 double lon = 0;
                 String img = null;
-                //double lon = item_json.get(4).getAsDouble();
                 String author = null;
                 String ref = null;
                 String note = null;
@@ -455,6 +457,10 @@ public class basic extends AppCompatActivity
                   return;
                 }
 
+                int res_size = result.size();
+                KMeans1 km1 = new KMeans1(res_size, "test");
+                KMeans2 km2 = new KMeans2(res_size);
+
 //                create_gp_cluster_overlay(gp_marker_cluster);
 //                create_gp_cluster_overlay();
                 remove_overlays();
@@ -466,6 +472,7 @@ public class basic extends AppCompatActivity
                 }
 
                 Iterator it = result.iterator();
+
                 int ids_added = 0;
                 while (it.hasNext()) {
                   JsonElement element = (JsonElement) it.next();
@@ -506,6 +513,9 @@ public class basic extends AppCompatActivity
                     continue;
                   }
 
+                  km1.add(lat, lon);
+                  km2.add(lat, lon);
+
                   if (id == 0) {
                     Log.e(TAG, "id is 0 which is wrong");
                     continue;
@@ -530,6 +540,12 @@ public class basic extends AppCompatActivity
                     snippet.append("</head>");
 
                     snippet.append("<body>");
+                    snippet.append(
+                            "<h3><a href='https://api.openstreetmap.social/table/id/").append(
+                            id).append(
+                            "'>id ").append(id);
+                    snippet.append("</a></h3>");
+
                     snippet.append("<a href='https://api.openstreetmap.social/").append(img).append(
                             "'>");
                     snippet.append(
@@ -537,10 +553,6 @@ public class basic extends AppCompatActivity
                             img).append("'>");
                     snippet.append("</a> <br>");
 
-                    snippet.append("<a href='https://api.openstreetmap.social/table/id/").append(
-                            id).append(
-                            "'>id ").append(id);
-                    snippet.append("</a><br>");
                     snippet.append("<ul>");
                     snippet.append("<li>image:").append(img);
                     snippet.append("<li>author:").append(author);
@@ -568,6 +580,7 @@ public class basic extends AppCompatActivity
                   }
 
                   GeoPoint poi_loc = new GeoPoint(lat, lon);
+
                   final Marker gp_marker = new Marker(map);
 
                   try {
@@ -578,6 +591,7 @@ public class basic extends AppCompatActivity
                     gp_marker.setPosition(poi_loc);
 
 //                    String[] tags_array = tags.split(";");
+
                     for (String s : tags_array) {
                       if (s.contains("cyklo")) {
                         gp_marker.setIcon(d_bicycle_icon);
@@ -588,14 +602,8 @@ public class basic extends AppCompatActivity
                       }
                     }
 
-/*                    if (Arrays.stream(tags_array).anyMatch("infotabule"::equals)) {
-                      gp_marker.setIcon(d_redmark_icon);
-                    } else {
-                      gp_marker.setIcon(d_poi_icon);
-                    }
-                    */
-                    //gp_marker.setImage(d_poi_icon);
                     //gp_marker_cluster.add(gp_marker);
+
                     map.getOverlays().add(gp_marker);
                     ids_added++;
                   } catch (Exception e) {
@@ -603,6 +611,52 @@ public class basic extends AppCompatActivity
                   }
                 }
                 Log.i(TAG, "json done, markers added " + ids_added);
+
+                if (ids_added > 10) {
+                  int cluster_amount = 5;
+
+                  if (ids_added > 10000) {
+                    cluster_amount = 100;
+                  } else if (ids_added > 1000) {
+                    cluster_amount = 30;
+                  } else if (ids_added > 100) {
+                    cluster_amount = 10;
+                  }
+
+                  Log.i(TAG, "clustering 1 ...");
+                  km1.clustering(cluster_amount, 10, null); //clusters, iterations
+                  Log.i(TAG, "done 1 ...");
+
+                  Log.i(TAG, "clustering 2 ...");
+                  km2.create_clusters(cluster_amount, 10); //clusters, iterations
+                  Log.i(TAG, "done 2 ...");
+                  km2.displayOutput();
+
+                  double c[][] = km1.get_centroids();
+                  for (int i = 0; i < km1.numclusters(); i++) {
+                    Log.i(TAG, "centroids: " + i + " " + c[i][0] + " " + c[i][1]);
+                    final Marker cluster_marker = new Marker(map);
+                    GeoPoint cluster_loc = new GeoPoint(c[i][0], c[i][1]);
+                    cluster_marker.setSnippet("cluster");
+                    cluster_marker.setTitle("cluster");
+                    cluster_marker.setIcon(d_redmark_icon);
+                    cluster_marker.setPosition(cluster_loc);
+                    map.getOverlays().add(cluster_marker);
+                  }
+
+                  double c2[][] = km2.get_centroids();
+                  for (int i = 0; i < km2.numclusters(); i++) {
+                    Log.i(TAG, "centroids: " + i + " " + c2[i][0] + " " + c2[i][1]);
+                    final Marker cluster_marker = new Marker(map);
+                    GeoPoint cluster_loc = new GeoPoint(c2[i][0], c2[i][1]);
+                    cluster_marker.setSnippet("cluster");
+                    cluster_marker.setTitle("cluster");
+                    cluster_marker.setIcon(d_greenmark_icon);
+                    cluster_marker.setPosition(cluster_loc);
+                    map.getOverlays().add(cluster_marker);
+                  }
+
+                }
                 map.invalidate();
               }
             });
@@ -708,6 +762,8 @@ public class basic extends AppCompatActivity
             getResources(), R.drawable.marker_poi_cluster, null);
     d_poi_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.guidepost, null);
     d_redmark_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marked_trail_red, null);
+    d_greenmark_icon = ResourcesCompat.getDrawable(
+            getResources(), R.drawable.marked_trail_green, null);
     d_board_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.board, null);
     d_bicycle_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.bicycle, null);
 
