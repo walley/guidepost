@@ -23,7 +23,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -472,6 +478,46 @@ public class basic extends AppCompatActivity
     return snippet.toString();
   }
 
+  public Bitmap drawTextToBitmap(Context gContext,
+                                 int gResId,
+                                 String gText
+                                )
+  {
+    Resources resources = gContext.getResources();
+    float scale = resources.getDisplayMetrics().density;
+    Bitmap bitmap =
+            BitmapFactory.decodeResource(resources, gResId);
+
+    android.graphics.Bitmap.Config bitmapConfig = bitmap.getConfig();
+    // set default bitmap config if none
+    if (bitmapConfig == null) {
+      bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
+    }
+    // resource bitmaps are imutable,
+    // so we need to convert it to mutable one
+    bitmap = bitmap.copy(bitmapConfig, true);
+
+    Canvas canvas = new Canvas(bitmap);
+    // new antialised Paint
+    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    // text color - #3D3D3D
+    paint.setColor(Color.rgb(61, 61, 61));
+    // text size in pixels
+    paint.setTextSize((int) (16 * scale));
+    // text shadow
+    paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+
+    // draw text to the Canvas center
+    Rect bounds = new Rect();
+    paint.getTextBounds(gText, 0, gText.length(), bounds);
+    int x = (bitmap.getWidth() - bounds.width()) / 2;
+    int y = (bitmap.getHeight() + bounds.height()) / 2;
+
+    canvas.drawText(gText, x, y, paint);
+
+    return bitmap;
+  }
+
   private void reload_guideposts()
   {
 
@@ -517,7 +563,21 @@ public class basic extends AppCompatActivity
                   return;
                 }
 
+                int cluster_amount = 0;
                 int res_size = result.size();
+
+                if (res_size > 10) {
+                  cluster_amount = 5;
+
+                  if (res_size > 10000) {
+                    cluster_amount = 15;
+                  } else if (res_size > 1000) {
+                    cluster_amount = 10;
+                  } else if (res_size > 100) {
+                    cluster_amount = 6;
+                  }
+                }
+
                 KMeans1 km1 = new KMeans1(res_size, "test");
                 KMeans2 km2 = new KMeans2(res_size);
 
@@ -534,6 +594,9 @@ public class basic extends AppCompatActivity
                 Iterator it = result.iterator();
 
                 int ids_added = 0;
+
+                Log.i(TAG, "result size:" + result.size());
+
                 while (it.hasNext()) {
                   JsonElement element = (JsonElement) it.next();
                   item_json = element.getAsJsonArray();
@@ -573,84 +636,87 @@ public class basic extends AppCompatActivity
                     continue;
                   }
 
-                  km1.add(lat, lon);
-                  km2.add(lat, lon);
-
+                  if (cluster_amount > 0) {
+                    km1.add(lat, lon);
+                    km2.add(lat, lon);
+                  }
                   if (id == 0) {
                     Log.e(TAG, "id is 0 which is wrong");
                     continue;
                   }
 
-                  final StringBuilder snippet = new StringBuilder();
                   String[] tags_array = tags.split(";");
 
-                  String testtest = get_bubble_html(snippet, id, img, author, ref, note, license,
-                                                    tags);
+                  if (cluster_amount == 0) {
 
-                  GeoPoint poi_loc = new GeoPoint(lat, lon);
+                    final StringBuilder snippet = new StringBuilder();
+                    String testtest = get_bubble_html(snippet, id, img, author, ref, note, license,
+                                                      tags
+                                                     );
+                    GeoPoint poi_loc = new GeoPoint(lat, lon);
+                    final Marker gp_marker = new Marker(map);
 
-                  final Marker gp_marker = new Marker(map);
-
-                  try {
+                    try {
 //                    gp_marker.setSnippet(snippet.toString());
-                    gp_marker.setSnippet(testtest);
-                    gp_marker.setInfoWindow(wi);
-                    gp_marker.setTitle("Guidepost id " + id);
-                    gp_marker.setSubDescription("" + id);
-                    gp_marker.setPosition(poi_loc);
+                      gp_marker.setSnippet(testtest);
+                      gp_marker.setInfoWindow(wi);
+                      gp_marker.setTitle("Guidepost id " + id);
+                      gp_marker.setSubDescription("" + id);
+                      gp_marker.setPosition(poi_loc);
 
-                    for (String s : tags_array) {
-                      if (s.contains("cyklo")) {
-                        gp_marker.setIcon(d_bicycle_icon);
-                      } else if (s.contains("infotabule")) {
-                        gp_marker.setIcon(d_board_icon);
-                      } else {
-                        gp_marker.setIcon(d_poi_icon);
+                      for (String s : tags_array) {
+                        if (s.contains("cyklo")) {
+                          gp_marker.setIcon(d_bicycle_icon);
+                        } else if (s.contains("infotabule")) {
+                          gp_marker.setIcon(d_board_icon);
+                        } else {
+                          gp_marker.setIcon(d_poi_icon);
+                        }
                       }
+
+                      //gp_marker_cluster.add(gp_marker);
+
+                      map.getOverlays().add(gp_marker);
+
+                      ids_added++;
+                    } catch (Exception e) {
+                      Log.e(TAG, "exception adding " + e.toString());
                     }
-
-                    //gp_marker_cluster.add(gp_marker);
-
-                    map.getOverlays().add(gp_marker);
-                    ids_added++;
-                  } catch (Exception e) {
-                    Log.e(TAG, "exception adding " + e.toString());
                   }
                 }
                 Log.i(TAG, "json done, markers added " + ids_added);
 
-                if (ids_added > 10) {
-                  int cluster_amount = 5;
+                long startTime;
+                long endTime;
+                if (cluster_amount > 0) {
 
-                  if (ids_added > 10000) {
-                    cluster_amount = 100;
-                  } else if (ids_added > 1000) {
-                    cluster_amount = 30;
-                  } else if (ids_added > 100) {
-                    cluster_amount = 10;
-                  }
-
+                  startTime = System.nanoTime();
                   Log.i(TAG, "clustering 1 ...");
                   km1.clustering(cluster_amount, 10, null); //clusters, iterations
                   Log.i(TAG, "done 1 ...");
+                  endTime = System.nanoTime();
+                  Log.i(TAG, "execution time:" + (endTime - startTime) / 1000000.0);
 
+                  startTime = System.nanoTime();
                   Log.i(TAG, "clustering 2 ...");
                   km2.create_clusters(cluster_amount, 10); //clusters, iterations
                   Log.i(TAG, "done 2 ...");
-                  km2.displayOutput();
+                  endTime = System.nanoTime();
+                  Log.i(TAG, "execution time:" + (endTime - startTime) / 1000000.0);
 
-                  double c[][] = km1.get_centroids();
-                  for (int i = 0; i < km1.numclusters(); i++) {
-                    Log.i(TAG, "centroids: " + i + " " + c[i][0] + " " + c[i][1]);
-                    final Marker cluster_marker = new Marker(map);
-                    GeoPoint cluster_loc = new GeoPoint(c[i][0], c[i][1]);
-                    cluster_marker.setSnippet("cluster");
-                    cluster_marker.setTitle("cluster");
-                    cluster_marker.setIcon(d_redmark_icon);
-                    cluster_marker.setPosition(cluster_loc);
-                    map.getOverlays().add(cluster_marker);
-                  }
-
+/*
+                    double c[][] = km1.get_centroids();
+                    for (int i = 0; i < km1.numclusters(); i++) {
+                      Log.i(TAG, "centroids: " + i + " " + c[i][0] + " " + c[i][1]);
+                      final Marker cluster_marker = new Marker(map);
+                      GeoPoint cluster_loc = new GeoPoint(c[i][0], c[i][1]);
+                      cluster_marker.setSnippet("cluster");
+                      cluster_marker.setTitle("cluster");
+                      cluster_marker.setIcon(d_redmark_icon);
+                      cluster_marker.setPosition(cluster_loc);
+                      map.getOverlays().add(cluster_marker);
+                    }
+*/
                   double c2[][] = km2.get_centroids();
                   for (int i = 0; i < km2.numclusters(); i++) {
                     Log.i(TAG, "centroids: " + i + " " + c2[i][0] + " " + c2[i][1]);
@@ -658,12 +724,17 @@ public class basic extends AppCompatActivity
                     GeoPoint cluster_loc = new GeoPoint(c2[i][0], c2[i][1]);
                     cluster_marker.setSnippet("cluster");
                     cluster_marker.setTitle("cluster");
-                    cluster_marker.setIcon(d_greenmark_icon);
                     cluster_marker.setPosition(cluster_loc);
+                    Bitmap x = drawTextToBitmap(
+                            context, R.drawable.marked_trail_green, "" + km2.get_cluster_size(i));
+                    cluster_marker.setIcon(new BitmapDrawable(map.getContext().getResources(), x));
+//                    cluster_marker.setIcon(d_greenmark_icon);
                     map.getOverlays().add(cluster_marker);
-                  }
 
+
+                  }
                 }
+
                 map.invalidate();
               }
             });
@@ -768,7 +839,8 @@ public class basic extends AppCompatActivity
     d_cluster_icon = ResourcesCompat.getDrawable(
             getResources(), R.drawable.marker_poi_cluster, null);
     d_poi_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.guidepost, null);
-    d_redmark_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.marked_trail_red, null);
+    d_redmark_icon = ResourcesCompat.getDrawable(
+            getResources(), R.drawable.marked_trail_red, null);
     d_greenmark_icon = ResourcesCompat.getDrawable(
             getResources(), R.drawable.marked_trail_green, null);
     d_board_icon = ResourcesCompat.getDrawable(getResources(), R.drawable.board, null);

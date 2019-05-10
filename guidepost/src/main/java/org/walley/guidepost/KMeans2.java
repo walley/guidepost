@@ -90,8 +90,6 @@ public class KMeans2
     formClusters(oldClusters);
     int iterations = 0;
 
-    displayOutput();
-
     // Showtime
     while (true) {
       updateMeans(oldClusters);
@@ -105,7 +103,6 @@ public class KMeans2
         resetClusters();
     }
 
-    displayOutput();
     Log.i(TAG, "Iterations taken = " + iterations);
   }
 
@@ -156,10 +153,8 @@ public class KMeans2
       minDistance = 999999999;
       for (int j = 0; j < means.length; j++) {
         distance[j] = Math.sqrt(
-                Math.pow((points[i][0] - means[j][0]), 2) + Math.pow(
-                        (points[i][1] - means[j][1]),
-                        2
-                                                                    ));
+                (points[i][0] - means[j][0]) * (points[i][0] - means[j][0])
+                        + (points[i][1] - means[j][1]) * (points[i][1] - means[j][1]));
         if (distance[j] < minDistance) {
           minDistance = distance[j];
           minIndex = j;
@@ -206,6 +201,11 @@ public class KMeans2
   public int numclusters()
   {
     return oldClusters.length;
+  }
+
+  public int get_cluster_size(int c)
+  {
+    return oldClusters[c].size();
   }
 
   public void displayOutput()
