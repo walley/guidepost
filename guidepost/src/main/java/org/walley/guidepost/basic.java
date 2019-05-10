@@ -411,6 +411,66 @@ public class basic extends AppCompatActivity
     Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
   }
 
+  private String get_bubble_html(StringBuilder snippet, int id, String img, String author, String ref, String note, String license, String tags)
+  {
+
+    String[] tags_array = tags.split(";");
+
+    try {
+      InputStream is = getResources().openRawResource(R.raw.colapsible);
+      String colapsible = IOUtils.toString(is);
+      IOUtils.closeQuietly(is);
+      colapsible = colapsible.replace("[*note*]", note);
+
+      snippet.append("<!DOCTYPE html>");
+      snippet.append("<html lang='en'>");
+
+      snippet.append("<head>");
+      snippet.append(
+              "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
+      snippet.append("</head>");
+
+      snippet.append("<body>");
+      snippet.append(
+              "<h3><a href='https://api.openstreetmap.social/table/id/").append(
+              id).append(
+              "'>id ").append(id);
+      snippet.append("</a></h3>");
+
+      snippet.append("<a href='https://api.openstreetmap.social/").append(img).append(
+              "'>");
+      snippet.append(
+              "<img height='150' src='http://api.openstreetmap.social/p/phpThumb.php?h=150&src=http://api.openstreetmap.social/").append(
+              img).append("'>");
+      snippet.append("</a> <br>");
+
+      snippet.append("<ul>");
+      snippet.append("<li>image:").append(img);
+      snippet.append("<li>author:").append(author);
+      snippet.append("<li>ref:").append(ref);
+      snippet.append("<li>license:").append(license);
+      snippet.append("</ul>");
+      snippet.append(colapsible);
+
+      InputStream is_tags = getResources().openRawResource(R.raw.tags);
+      String css_tags = IOUtils.toString(is_tags);
+      IOUtils.closeQuietly(is_tags);
+
+      snippet.append("<h3>tags:</h3>").append(css_tags);
+      snippet.append("<p>");
+      for (String s : tags_array) {
+        snippet.append("<span class='t'>");
+        snippet.append(s);
+        snippet.append("</span>");
+      }
+      snippet.append("</p>");
+
+      snippet.append("</body></html>");
+    } catch (Exception e) {
+      Log.e(TAG, "exception setting " + e.toString());
+    }
+    return snippet.toString();
+  }
 
   private void reload_guideposts()
   {
@@ -524,73 +584,20 @@ public class basic extends AppCompatActivity
                   final StringBuilder snippet = new StringBuilder();
                   String[] tags_array = tags.split(";");
 
-
-                  try {
-                    InputStream is = getResources().openRawResource(R.raw.colapsible);
-                    String colapsible = IOUtils.toString(is);
-                    IOUtils.closeQuietly(is);
-                    colapsible = colapsible.replace("[*note*]", note);
-
-                    snippet.append("<!DOCTYPE html>");
-                    snippet.append("<html lang='en'>");
-
-                    snippet.append("<head>");
-                    snippet.append(
-                            "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
-                    snippet.append("</head>");
-
-                    snippet.append("<body>");
-                    snippet.append(
-                            "<h3><a href='https://api.openstreetmap.social/table/id/").append(
-                            id).append(
-                            "'>id ").append(id);
-                    snippet.append("</a></h3>");
-
-                    snippet.append("<a href='https://api.openstreetmap.social/").append(img).append(
-                            "'>");
-                    snippet.append(
-                            "<img height='150' src='http://api.openstreetmap.social/p/phpThumb.php?h=150&src=http://api.openstreetmap.social/").append(
-                            img).append("'>");
-                    snippet.append("</a> <br>");
-
-                    snippet.append("<ul>");
-                    snippet.append("<li>image:").append(img);
-                    snippet.append("<li>author:").append(author);
-                    snippet.append("<li>ref:").append(ref);
-                    snippet.append("<li>license:").append(license);
-                    snippet.append("</ul>");
-                    snippet.append(colapsible);
-
-                    InputStream is_tags = getResources().openRawResource(R.raw.tags);
-                    String css_tags = IOUtils.toString(is_tags);
-                    IOUtils.closeQuietly(is_tags);
-
-                    snippet.append("<h3>tags:</h3>").append(css_tags);
-                    snippet.append("<p>");
-                    for (String s : tags_array) {
-                      snippet.append("<span class='t'>");
-                      snippet.append(s);
-                      snippet.append("</span>");
-                    }
-                    snippet.append("</p>");
-
-                    snippet.append("</body></html>");
-                  } catch (Exception e) {
-                    Log.e(TAG, "exception setting " + e.toString());
-                  }
+                  String testtest = get_bubble_html(snippet, id, img, author, ref, note, license,
+                                                    tags);
 
                   GeoPoint poi_loc = new GeoPoint(lat, lon);
 
                   final Marker gp_marker = new Marker(map);
 
                   try {
-                    gp_marker.setSnippet(snippet.toString());
+//                    gp_marker.setSnippet(snippet.toString());
+                    gp_marker.setSnippet(testtest);
                     gp_marker.setInfoWindow(wi);
                     gp_marker.setTitle("Guidepost id " + id);
                     gp_marker.setSubDescription("" + id);
                     gp_marker.setPosition(poi_loc);
-
-//                    String[] tags_array = tags.split(";");
 
                     for (String s : tags_array) {
                       if (s.contains("cyklo")) {
