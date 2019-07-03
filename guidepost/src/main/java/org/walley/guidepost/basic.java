@@ -726,7 +726,7 @@ public class basic extends AppCompatActivity
                     cluster_marker.setTitle("cluster");
                     cluster_marker.setPosition(cluster_loc);
                     Bitmap x = drawTextToBitmap(
-                            context, R.drawable.marked_trail_green, "" + km2.get_cluster_size(i));
+                            context, R.drawable.cloud, "" + km2.get_cluster_size(i));
                     cluster_marker.setIcon(new BitmapDrawable(map.getContext().getResources(), x));
 //                    cluster_marker.setIcon(d_greenmark_icon);
                     map.getOverlays().add(cluster_marker);
