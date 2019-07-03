@@ -16,48 +16,54 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingEnd="5dp"
-    android:paddingStart="5dp"
-    >
+    android:paddingStart="5dp">
 
     <LinearLayout
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal">
 
-      <TextView
-        android:id="@+id/bubble_title"
+      <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_weight="1"
-        android:maxEms="17"
-        android:text="Cluster"
-        android:textColor="#000000"/>
+        android:orientation="vertical">
+
+        <TextView
+          android:id="@+id/bubble_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="start"
+          android:layout_weight="1"
+          android:maxEms="17"
+          android:text="Title"
+          android:textColor="#000000"/>
+
+        <TextView
+          android:id="@+id/cluster_bubble_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:maxEms="17"
+          android:text="ids ...."
+          android:textColor="#000000"
+          android:textSize="12sp"
+          />
+      </LinearLayout>
 
       <Button
         android:id="@+id/bubble_moreinfo"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_weight="0"
         android:background="@drawable/btn_moreinfo"
-        android:visibility="gone"/>
-    </LinearLayout>
+        />
 
-    <TextView
-      android:id="@+id/cluster_bubble_text"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:maxEms="17"
-      android:text="ids ...."
-      android:textColor="#000000"
-      android:textSize="12sp"
-      />
+    </LinearLayout>
 
     <WebView
       android:id="@+id/cluster_bubble_webview"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-/>
+      android:layout_width="200dp"
+      android:layout_height="350dp"
+      />
   </LinearLayout>
 </LinearLayout>
