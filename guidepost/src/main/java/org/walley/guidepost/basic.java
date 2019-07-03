@@ -340,7 +340,6 @@ public class basic extends AppCompatActivity
     ActivityCompat.requestPermissions(
             this, permissions.toArray(new String[permissions.size()]), 1337);
     Log.i(TAG, "Permission request");
-    return;
   }
 
   void request_permissionx()
