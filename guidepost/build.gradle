@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "org.walley.guidepost"
         minSdkVersion 17
-        targetSdkVersion 27
+        targetSdkVersion 28
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -48,8 +48,8 @@ dependencies {
     implementation files('libs/httpmime-4.3.6.jar')
     implementation files('libs/urlimageviewhelper-1.0.4.jar')
     implementation files('libs/osmbonuspack_6.6.0.aar')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.koushikdutta.ion:ion:2.+'
     implementation 'org.osmdroid:osmdroid-android:6.1.0'
