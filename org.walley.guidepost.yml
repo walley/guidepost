@@ -1,0 +1,52 @@
+License: Unknown
+SourceCode: https://github.com/vanous/guidepost.git
+IssueTracker: https://github.com/vanous/guidepost.git/issues
+
+RepoType: git
+Repo: https://github.com/vanous/guidepost.git
+
+Builds:
+  - versionName: '1.20'
+    versionCode: '23'
+    commit: set_tag_here
+    subdir: guidepost
+    gradle:
+      - yes
+    srclibs:
+      - CommonsIO@2.4
+      - ApacheHttpCore@4.3.3
+      - ApacheHttpClient@4.3.6
+    prebuild:
+      - rm libs/*
+        #- mkdir libs
+        #- pwd
+        #- cp ../../build.gradle ./
+        #- cp ../../build.gradle.project ../build.gradle
+        #- sed -i -e '/slf4j-android/d' $$OSMBonusPack$$/build.gradle
+        #- cp -r $$OSMBonusPack$$ ../
+        #- gradle build
+      - pushd $$CommonsIO$$
+      - $$MVN3$$ package -Dmaven.test.skip=true
+      - popd
+      - cp $$CommonsIO$$/target/commons-io-2.4.jar libs/
+      - pushd $$ApacheHttpClient$$/httpclient/
+      - sed -i -e 's/<packaging>jar<\/packaging>/<packaging>jar<\/packaging><properties> <maven.compiler.source>1.6<\/maven.compiler.source> <maven.compiler.target>1.6<\/maven.compiler.target> <\/properties>/g' pom.xml
+      - $$MVN3$$ package -Dmaven.test.skip=true -Dmaven.javadoc.skip=true
+        #- $$MVN3$$ package
+      - popd
+      - cp $$ApacheHttpClient$$/httpclient/target/httpclient-4.3.6.jar libs/
+      - pushd $$ApacheHttpCore$$/httpcore
+      - sed -i -e 's/<packaging>jar<\/packaging>/<packaging>jar<\/packaging><properties> <maven.compiler.source>1.6<\/maven.compiler.source> <maven.compiler.target>1.6<\/maven.compiler.target> <\/properties>/g' pom.xml
+      - $$MVN3$$ package -Dmaven.test.skip=true -Dmaven.javadoc.skip=true
+      - popd
+      - cp $$ApacheHttpCore$$/httpcore/target/httpcore-4.3.3.jar libs/
+      - pushd $$ApacheHttpClient$$/httpmime/
+      - sed -i -e 's/<packaging>jar<\/packaging>/<packaging>jar<\/packaging><properties> <maven.compiler.source>1.6<\/maven.compiler.source> <maven.compiler.target>1.6<\/maven.compiler.target> <\/properties>/g' pom.xml
+      - $$MVN3$$ package -Dmaven.test.skip=true -Dmaven.javadoc.skip=true
+        #- $$MVN3$$ package
+      - popd
+      - cp $$ApacheHttpClient$$/httpmime/target/httpmime-4.3.6.jar libs/
+
+
+AutoUpdateMode: None
+UpdateCheckMode: Tags
