@@ -1,9 +1,9 @@
-License: Unknown
-SourceCode: https://github.com/vanous/guidepost.git
-IssueTracker: https://github.com/vanous/guidepost.git/issues
+License: GPL-3.0-or-later
+SourceCode: https://github.com/walley/guidepost.git
+IssueTracker: https://github.com/walley/guidepost.git/issues
 
 RepoType: git
-Repo: https://github.com/vanous/guidepost.git
+Repo: https://github.com/walley/guidepost.git
 
 Builds:
   - versionName: '1.20'
