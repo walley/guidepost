@@ -53,4 +53,6 @@ dependencies {
     implementation 'com.koushikdutta.ion:ion:2.+'
     implementation 'org.osmdroid:osmdroid-android:6.1.0'
     implementation 'commons-io:commons-io:2.4'
+    implementation 'commons-logging:commons-logging:1.2'
+
 }
