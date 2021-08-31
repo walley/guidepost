@@ -26,6 +26,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -83,16 +84,39 @@ public class guidepost extends AppCompatActivity
   int gp_overlay_number;
   Bitmap clusterIcon;
 
-  void request_permission() {
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1338);
+  void request_permission()
+  {
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(
+              this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1338);
       Log.i(TAG, "write external storage Permission");
-      return;
     }
+
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(
+              this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, 1340);
+      Log.i(TAG, "write external storage Permission");
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      if (ActivityCompat.checkSelfPermission(
+              this, Manifest.permission.ACCESS_MEDIA_LOCATION) != PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(
+                this, new String[] {Manifest.permission.ACCESS_MEDIA_LOCATION}, 1339);
+        Log.i(TAG, "ACCESS_MEDIA_LOCATION Permission");
+      }
+    }
+
   }
 
-  /** Called when the activity is first created. */
-  @Override public void onCreate(Bundle savedInstanceState)
+
+  /**
+   * Called when the activity is first created.
+   */
+  @Override
+  public void onCreate(Bundle savedInstanceState)
   {
 
     super.onCreate(savedInstanceState);
