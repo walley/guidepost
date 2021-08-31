@@ -1,3 +1,22 @@
+/*
+Copyright 2013-2021 Michal Grézl
+
+This file is part of Guidepost android app.
+
+Guidepost is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Guidepost is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Guidepost.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package org.walley.guidepost;
 
 import org.osmdroid.views.MapView;
@@ -46,7 +65,6 @@ public class winfowindow extends MarkerInfoWindow
         Log.e(TAG, "tv2 is null");
       }
     }
-
 
 
     String html_text = overlay.getSnippet();

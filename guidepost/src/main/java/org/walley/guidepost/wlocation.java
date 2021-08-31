@@ -1,5 +1,5 @@
 /*
-Copyright 2013-2018 Michal Grézl
+Copyright 2013-2021 Michal Grézl
 
 This file is part of Guidepost android app.
 

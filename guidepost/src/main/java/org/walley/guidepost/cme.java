@@ -1,5 +1,5 @@
 /* 
-Copyright 2013-2020 Michal Grezl
+Copyright 2013-2021 Michal Grezl
 
 This file is part of Guidepost.
 
