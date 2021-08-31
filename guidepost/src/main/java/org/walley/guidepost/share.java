@@ -131,17 +131,16 @@ public class share extends AppCompatActivity
 
   /******************************************************************************/
   public String filename_from_uri(Uri content_uri)
-  {
   /******************************************************************************/
+  {
     String res = null;
     String[] proj = {MediaStore.Images.Media.DATA};
-//    Cursor cursor = getContentResolver().query(content_uri, proj, null, null, null);
+
     Cursor cursor = getContentResolver().query(content_uri, null, null, null, null);
     try {
       if (cursor.moveToFirst()) {
         Log.i(TAG, "filename_from_uri cursor0 " + cursor.getString(0));
         Log.i(TAG, "filename_from_uri cursor1 " + cursor.getString(1));
-//        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         int data_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
         int name_index = cursor.getColumnIndex("_display_name");
         int size_index = cursor.getColumnIndex("_size");
@@ -164,28 +163,6 @@ public class share extends AppCompatActivity
     return res;
   }
 
-  /******************************************************************************/
-  public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight)
-  /******************************************************************************/
-  {
-    // Raw height and width of image - this does not work yet
-    final int height = options.outHeight;
-    final int width = options.outWidth;
-    int inSampleSize = 1;
-
-    if (height > reqHeight || width > reqWidth) {
-      final int halfHeight = height / 2;
-      final int halfWidth = width / 2;
-      // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-      // height and width larger than the requested height and width.
-      while ((halfHeight / inSampleSize) > reqHeight
-              && (halfWidth / inSampleSize) > reqWidth) {
-        inSampleSize *= 2;
-      }
-    }
-    return inSampleSize;
-  }
-
 // Read bitmap
 
   /******************************************************************************/
@@ -194,7 +171,7 @@ public class share extends AppCompatActivity
   {
     Bitmap bm = null;
     BitmapFactory.Options options = new BitmapFactory.Options();
-    options.inSampleSize = 5; //calculateInSampleSize(options, 100, 100);
+    options.inSampleSize = 5;
     int height = options.outHeight;
     int width = options.outWidth;
 
@@ -389,8 +366,6 @@ public class share extends AppCompatActivity
 
         try {
           image = new BitmapDrawable(getResources(), read_and_scale(uri));
-//        image = null;
-//        image = new BitmapDrawable(getResources(), MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri));
         } catch (Exception e) {
           Log.e(TAG, "bitmap error");
         } catch (OutOfMemoryError e) {
