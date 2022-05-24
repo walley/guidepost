@@ -1,5 +1,5 @@
 /*
-Copyright 2013-2021 Michal Grézl
+Copyright 2013-2022 Michal Grézl
 
 This file is part of Guidepost.
 
@@ -19,6 +19,8 @@ along with Guidepost.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.walley.guidepost;
 
+import android.os.Bundle;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -36,19 +38,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v4.content.res.ResourcesCompat;
+
 import android.util.Log;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import com.google.android.material.navigation.NavigationView;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -57,17 +52,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.koushikdutta.ion.ProgressCallback;
 
 import org.apache.commons.io.IOUtils;
-import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
-import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -75,19 +67,34 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-import org.osmdroid.views.overlay.simplefastpoint.LabelledGeoPoint;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.navigation.NavigationView;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.view.GravityCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
+
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
+import org.walley.guidepost.databinding.BasicBinding;
 
 public class basic extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -98,7 +105,7 @@ public class basic extends AppCompatActivity
   private static final int REQUEST_IMAGE_CAPTURE = 1;
   private static final int RESULT_SETTINGS = 2;
 
-  ActionBarDrawerToggle toggle;
+  //ActionBarDrawerToggle toggle;
   Bitmap b_cluster_icon;
   Context context = this;
   Drawable d_cluster_icon;
@@ -108,7 +115,6 @@ public class basic extends AppCompatActivity
   Drawable d_board_icon;
   Drawable d_bicycle_icon;
   DrawerLayout drawer;
-  FloatingActionButton fab;
   GeoPoint start_point;
   GeoPoint current_point;
   IMapController map_controller;
@@ -116,17 +122,20 @@ public class basic extends AppCompatActivity
   MapView map = null;
   MyLocationNewOverlay location_overlay;
   NavigationView navigationView;
-  Toolbar toolbar;
+  //  Toolbar toolbar;
   wlocation gps;
   String current_photo;
   wclusterer gp_marker_cluster;
   winfowindow wi;
+  private BasicBinding binding;
+  private AppBarConfiguration mAppBarConfiguration;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.basic);
+    binding = BasicBinding.inflate(getLayoutInflater());
+    setContentView(binding.getRoot());
 
     Ion.getDefault(context).configure().setLogging(TAG, Log.INFO);
     request_permission();
@@ -165,7 +174,6 @@ public class basic extends AppCompatActivity
         if (resultCode == RESULT_OK) {
           try {
             File file = new File(current_photo);
-//            Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", current_photo);
             Uri uri = FileProvider.getUriForFile(context, "org.walley.guidepost", file);
             Log.i(TAG, "onActivityResult(REQUEST_IMAGE_CAPTURE) currphoto:" + current_photo);
             Log.i(TAG, "onActivityResult(REQUEST_IMAGE_CAPTURE) uri:" + uri.toString());
@@ -809,11 +817,11 @@ public class basic extends AppCompatActivity
 
   private void create_ui()
   {
-    toolbar = findViewById(R.id.toolbar);
+//    toolbar = findViewById(R.id.toolbar);
+//    setSupportActionBar(toolbar);
+    setSupportActionBar(binding.appBarMain.toolbar);
 
-    setSupportActionBar(toolbar);
-
-    fab = findViewById(R.id.fab);
+    View fab = findViewById(R.id.fab);
     fab.setOnClickListener(new View.OnClickListener()
     {
       @Override
@@ -823,15 +831,26 @@ public class basic extends AppCompatActivity
       }
     });
 
-    drawer = findViewById(R.id.drawer_layout);
-
-    toggle = new ActionBarDrawerToggle(
+    //drawer = findViewById(R.id.drawer_layout);
+    drawer = binding.drawerLayout;
+    /*toggle = new ActionBarDrawerToggle(
             this, drawer, toolbar, R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
     );
     drawer.addDrawerListener(toggle);
     toggle.syncState();
-
+*/
+    mAppBarConfiguration = new AppBarConfiguration.Builder(
+            R.id.nav_location,
+            R.id.nav_gallery,
+            R.id.nav_manage,
+            R.id.nav_share,
+            R.id.nav_send
+    )
+            .setOpenableLayout(drawer)
+            .build();
+    NavController navController = Navigation.findNavController(
+            this, R.id.map);
     navigationView = findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 

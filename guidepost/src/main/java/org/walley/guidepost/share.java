@@ -1,5 +1,5 @@
 /*
-Copyright 2013-2021 Michal Grézl
+Copyright 2013-2022 Michal Grézl
 
 This file is part of Guidepost android app.
 
@@ -20,6 +20,7 @@ along with Guidepost.  If not, see <http://www.gnu.org/licenses/>.
 package org.walley.guidepost;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,8 +37,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -48,17 +47,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 
 import org.walley.guidepost.cme.ProgressListener;
 
@@ -74,6 +62,26 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.util.DisplayMetrics;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /*START OF CLASS***************************************************************/
@@ -83,7 +91,7 @@ public class share extends AppCompatActivity
 
   public static final String TAG = "GP-SHARE";
 
-  private DefaultHttpClient mHttpClient;
+  private OkHttpClient mHttpClient;
   private Uri uri;
   EditText lat_coord;
   EditText lon_coord;
@@ -398,6 +406,7 @@ public class share extends AppCompatActivity
   }
 
   /******************************************************************************/
+  @SuppressLint("SetTextI18n")
   public void set_image_location()
   /******************************************************************************/
   {
@@ -553,7 +562,7 @@ public class share extends AppCompatActivity
     private ProgressDialog pd;
     private long post_total_size;
 
-    private HttpClient httpClient;
+    private OkHttpClient httpClient;
     private HttpContext httpContext;
     private HttpPost post_request;
     private HttpResponse response;
@@ -604,12 +613,13 @@ public class share extends AppCompatActivity
     {
       String serverResponse = null;
       try {
-        httpClient = new DefaultHttpClient();
-        httpContext = new BasicHttpContext();
-        HttpEntity entity = null;
+        //httpClient = new DefaultHttpClient();
+        httpClient = new OkHttpClient();
+        //       httpContext = new BasicHttpContext();
+        //       HttpEntity entity = null;
 
         String serverPath = "http://api.openstreetmap.social/php/guidepost.php";
-        post_request = new HttpPost(serverPath);
+        //       post_request = new HttpPost(serverPath);
 
         cme multipart_content = new cme(
                 new ProgressListener()
@@ -621,7 +631,20 @@ public class share extends AppCompatActivity
                   }
                 });
 
-        multipart_content.addPart("action", new StringBody("file"));
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("action", "file")
+                .addFormDataPart("source", "mobile")
+                .addFormDataPart("author", author)
+                .addFormDataPart("lat", lat)
+                .addFormDataPart("lon", lon)
+                .addFormDataPart("license", "CCBYSA4")
+                .addFormDataPart("uploadedfile", "img.txt", RequestBody.create(
+                        MediaType.parse("application/octet-stream"),
+                        image
+                                                                              )).build();
+
+    /*    multipart_content.addPart("action", new StringBody("file"));
         multipart_content.addPart("source", new StringBody("mobile"));
         multipart_content.addPart("author", new StringBody(author));
         multipart_content.addPart("lat", new StringBody(lat));
@@ -636,15 +659,27 @@ public class share extends AppCompatActivity
         entity = response.getEntity();
         serverResponse = EntityUtils.toString(entity);
         entity_consume_content(entity);
+*/
+        Request request = new Request.Builder()
+                .url(serverPath)
+                .post(requestBody)
+                .build();
 
-        Log.i(TAG, "doInBackground server response:" + serverResponse);
+        try (Response response = httpClient.newCall(request).execute()) {
 
-      } catch (Exception e) {
-        e.printStackTrace();
-        serverResponse = "0-client side error uploading";
-      }
+          if (!response.isSuccessful()) {
+            throw new IOException("Unexpected code " + response);
+          }
 
-      return serverResponse;
+
+          Log.i(TAG, "doInBackground server response:" + serverResponse);
+
+        } catch (Exception e) {
+          e.printStackTrace();
+          serverResponse = "0-client side error uploading";
+        }
+
+        return serverResponse;
     }
 
     @Override
