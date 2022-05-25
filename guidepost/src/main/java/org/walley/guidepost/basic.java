@@ -41,9 +41,7 @@ import android.provider.MediaStore;
 
 import android.util.Log;
 import android.view.View;
-
 import com.google.android.material.navigation.NavigationView;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -93,7 +91,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 import org.walley.guidepost.databinding.BasicBinding;
 
 public class basic extends AppCompatActivity
@@ -122,7 +119,7 @@ public class basic extends AppCompatActivity
   MapView map = null;
   MyLocationNewOverlay location_overlay;
   NavigationView navigationView;
-  //  Toolbar toolbar;
+//  Toolbar toolbar;
   wlocation gps;
   String current_photo;
   wclusterer gp_marker_cluster;
@@ -135,6 +132,9 @@ public class basic extends AppCompatActivity
   {
     super.onCreate(savedInstanceState);
     binding = BasicBinding.inflate(getLayoutInflater());
+    drawer = binding.drawerLayout;
+    navigationView = binding.navView;
+
     setContentView(binding.getRoot());
 
     Ion.getDefault(context).configure().setLogging(TAG, Log.INFO);
@@ -817,8 +817,6 @@ public class basic extends AppCompatActivity
 
   private void create_ui()
   {
-//    toolbar = findViewById(R.id.toolbar);
-//    setSupportActionBar(toolbar);
     setSupportActionBar(binding.appBarMain.toolbar);
 
     View fab = findViewById(R.id.fab);
@@ -831,15 +829,6 @@ public class basic extends AppCompatActivity
       }
     });
 
-    //drawer = findViewById(R.id.drawer_layout);
-    drawer = binding.drawerLayout;
-    /*toggle = new ActionBarDrawerToggle(
-            this, drawer, toolbar, R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-    );
-    drawer.addDrawerListener(toggle);
-    toggle.syncState();
-*/
     mAppBarConfiguration = new AppBarConfiguration.Builder(
             R.id.nav_location,
             R.id.nav_gallery,
@@ -849,10 +838,10 @@ public class basic extends AppCompatActivity
     )
             .setOpenableLayout(drawer)
             .build();
-    NavController navController = Navigation.findNavController(
-            this, R.id.map);
-    navigationView = findViewById(R.id.nav_view);
-    navigationView.setNavigationItemSelectedListener(this);
+    NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+    NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+    NavigationUI.setupWithNavController(navigationView, navController);
+
 
     d_cluster_icon = ResourcesCompat.getDrawable(
             getResources(), R.drawable.marker_poi_cluster, null);

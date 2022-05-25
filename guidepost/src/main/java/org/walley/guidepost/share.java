@@ -48,8 +48,6 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
-import org.walley.guidepost.cme.ProgressListener;
-
 import android.app.AlertDialog;
 import android.graphics.BitmapFactory;
 import android.content.res.AssetFileDescriptor;
@@ -64,6 +62,7 @@ import android.util.DisplayMetrics;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.MenuCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -86,17 +85,13 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /*START OF CLASS***************************************************************/
 public class share extends AppCompatActivity
-/*START OF CLASS***************************************************************/
+        /*START OF CLASS***************************************************************/
 {
 
   public static final String TAG = "GP-SHARE";
-
-  private OkHttpClient mHttpClient;
-  private Uri uri;
   EditText lat_coord;
   EditText lon_coord;
   Context context;
-  private EditText text_author;
   ExifInterface exif = null;
   Drawable image = null;
   ImageView image_map;
@@ -107,19 +102,10 @@ public class share extends AppCompatActivity
   int map_height;
   int map_width;
   wlocation gps;
+  private OkHttpClient mHttpClient;
+  private Uri uri;
+  private EditText text_author;
 
-  /******************************************************************************/
-  public void entity_consume_content(HttpEntity entity)
-  /******************************************************************************/
-  {
-    if (entity != null) {
-      try {
-        entity.consumeContent();
-      } catch (IOException e) {
-        Log.e(TAG, "entity_consume_content error " + e.toString());
-      }
-    }
-  }
 
   /******************************************************************************/
   public String filename_from_uri_deprecated(Uri content_uri)
@@ -551,160 +537,6 @@ public class share extends AppCompatActivity
   }
 
   /******************************************************************************/
-  public class HttpMultipartPost extends AsyncTask<String, Integer, String>
-          /******************************************************************************/
-  {
-    private Context context;
-    private String author;
-    private String lat;
-    private String lon;
-    private File image;
-    private ProgressDialog pd;
-    private long post_total_size;
-
-    private OkHttpClient httpClient;
-    private HttpContext httpContext;
-    private HttpPost post_request;
-    private HttpResponse response;
-
-    public HttpMultipartPost(Context context, String author, String lat, String lon, File image)
-    {
-      this.context = context;
-      this.author = author;
-      this.lat = lat;
-      this.lon = lon;
-      this.image = image;
-    }
-
-    @Override
-    protected void onPreExecute()
-    {
-
-      if (context == null) {
-        Log.e(TAG, "null context");
-      }
-
-      pd = new ProgressDialog(context);
-      pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-      String uploading_string = getResources().getString(R.string.uploading);
-      pd.setMessage(uploading_string);
-      pd.setCancelable(false);
-
-      // Set a click listener for progress dialog cancel button
-      pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener()
-      {
-        @Override
-        public void onClick(DialogInterface dialog, int which)
-        {
-          pd.dismiss();
-          try {
-            post_request.abort();
-          } catch (Exception e) {
-            Log.e(TAG, "post abort failed: " + e.toString());
-          }
-        }
-      });
-
-      pd.show();
-    }
-
-    @Override
-    protected String doInBackground(String... params)
-    {
-      String serverResponse = null;
-      try {
-        //httpClient = new DefaultHttpClient();
-        httpClient = new OkHttpClient();
-        //       httpContext = new BasicHttpContext();
-        //       HttpEntity entity = null;
-
-        String serverPath = "http://api.openstreetmap.social/php/guidepost.php";
-        //       post_request = new HttpPost(serverPath);
-
-        cme multipart_content = new cme(
-                new ProgressListener()
-                {
-                  @Override
-                  public void transferred(long value)
-                  {
-                    publishProgress((int) ((value / (float) post_total_size) * 100));
-                  }
-                });
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("action", "file")
-                .addFormDataPart("source", "mobile")
-                .addFormDataPart("author", author)
-                .addFormDataPart("lat", lat)
-                .addFormDataPart("lon", lon)
-                .addFormDataPart("license", "CCBYSA4")
-                .addFormDataPart("uploadedfile", "img.txt", RequestBody.create(
-                        MediaType.parse("application/octet-stream"),
-                        image
-                                                                              )).build();
-
-    /*    multipart_content.addPart("action", new StringBody("file"));
-        multipart_content.addPart("source", new StringBody("mobile"));
-        multipart_content.addPart("author", new StringBody(author));
-        multipart_content.addPart("lat", new StringBody(lat));
-        multipart_content.addPart("lon", new StringBody(lon));
-        multipart_content.addPart("license", new StringBody("CCBYSA4"));
-        multipart_content.addPart("uploadedfile", new FileBody(image));
-
-        post_total_size = multipart_content.getContentLength();
-
-        post_request.setEntity(multipart_content);
-        response = httpClient.execute(post_request, httpContext);
-        entity = response.getEntity();
-        serverResponse = EntityUtils.toString(entity);
-        entity_consume_content(entity);
-*/
-        Request request = new Request.Builder()
-                .url(serverPath)
-                .post(requestBody)
-                .build();
-
-        try (Response response = httpClient.newCall(request).execute()) {
-
-          if (!response.isSuccessful()) {
-            throw new IOException("Unexpected code " + response);
-          }
-
-
-          Log.i(TAG, "doInBackground server response:" + serverResponse);
-
-        } catch (Exception e) {
-          e.printStackTrace();
-          serverResponse = "0-client side error uploading";
-        }
-
-        return serverResponse;
-    }
-
-    @Override
-    protected void onProgressUpdate(Integer... progress)
-    {
-      pd.setProgress((int) (progress[0]));
-    }
-
-    @Override
-    protected void onPostExecute(String result)
-    {
-      Log.i(TAG, "onPostExecute" + result);
-      pd.dismiss();
-      post_execute(result);
-    }
-
-    @Override
-    protected void onCancelled()
-    {
-      post_execute("0-canceled");
-    }
-
-  }
-
-  /******************************************************************************/
   public void alert(String title, String message)
   /******************************************************************************/
   {
@@ -738,7 +570,6 @@ public class share extends AppCompatActivity
                     })
             .show();
   }
-
 
   /******************************************************************************/
   public void messagebox()
@@ -797,6 +628,148 @@ public class share extends AppCompatActivity
       Log.e(TAG, "not our request?");
       super.onRequestPermissionsResult(request, permissions, results);
     }
+  }
+
+  /******************************************************************************/
+  public class HttpMultipartPost extends AsyncTask<String, Integer, String>
+          /******************************************************************************/
+  {
+    private Context context;
+    private String author;
+    private String lat;
+    private String lon;
+    private File image;
+    private ProgressDialog pd;
+    private long post_total_size;
+
+    private OkHttpClient httpClient;
+
+    public HttpMultipartPost(Context context, String author, String lat, String lon, File image)
+    {
+      this.context = context;
+      this.author = author;
+      this.lat = lat;
+      this.lon = lon;
+      this.image = image;
+    }
+
+    @Override
+    protected void onPreExecute()
+    {
+
+      if (context == null) {
+        Log.e(TAG, "null context");
+      }
+
+      pd = new ProgressDialog(context);
+      pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+      String uploading_string = getResources().getString(R.string.uploading);
+      pd.setMessage(uploading_string);
+      pd.setCancelable(false);
+
+      // Set a click listener for progress dialog cancel button
+      pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener()
+      {
+        @Override
+        public void onClick(DialogInterface dialog, int which)
+        {
+          pd.dismiss();
+          try {
+            //post_request.abort();
+          } catch (Exception e) {
+            Log.e(TAG, "post abort failed: " + e.toString());
+          }
+        }
+      });
+
+      pd.show();
+    }
+
+    @Override
+    protected String doInBackground(String... params)
+    {
+      String serverResponse = null;
+      try {
+        //httpClient = new DefaultHttpClient();
+        httpClient = new OkHttpClient();
+        //       httpContext = new BasicHttpContext();
+        //       HttpEntity entity = null;
+
+        String serverPath = "http://api.openstreetmap.social/php/guidepost.php";
+        //       post_request = new HttpPost(serverPath);
+
+        /*cme multipart_content = new cme(
+                new ProgressListener()
+                {
+                  @Override
+                  public void transferred(long value)
+                  {
+                    publishProgress((int) ((value / (float) post_total_size) * 100));
+                  }
+                });
+*/
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("action", "file")
+                .addFormDataPart("source", "mobile")
+                .addFormDataPart("author", author)
+                .addFormDataPart("lat", lat)
+                .addFormDataPart("lon", lon)
+                .addFormDataPart("license", "CCBYSA4")
+                .addFormDataPart(
+                        "uploadedfile",
+                        "img.txt",
+                        RequestBody.create(
+                                MediaType.parse("application/octet-stream"),
+                                image
+                                          )
+                                ).build();
+
+
+        Request request = new Request.Builder()
+                .url(serverPath)
+                .post(requestBody)
+                .build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+
+          if (!response.isSuccessful()) {
+            throw new IOException("Unexpected code " + response);
+          }
+
+
+          Log.i(TAG, "doInBackground server response:" + serverResponse);
+
+        } catch (Exception e) {
+          e.printStackTrace();
+          serverResponse = "0-client side error uploading";
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return serverResponse;
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... progress)
+    {
+      pd.setProgress((int) (progress[0]));
+    }
+
+    @Override
+    protected void onPostExecute(String result)
+    {
+      Log.i(TAG, "onPostExecute" + result);
+      pd.dismiss();
+      post_execute(result);
+    }
+
+    @Override
+    protected void onCancelled()
+    {
+      post_execute("0-canceled");
+    }
+
   }
 
 }
