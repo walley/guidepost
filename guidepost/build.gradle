@@ -58,7 +58,7 @@ dependencies {
     implementation 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'
     implementation 'com.github.MKergall:osmbonuspack:6.7.0'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
-    implementation 'com.koushikdutta.ion:ion:2.2.1'
+    implementation 'com.koushikdutta.ion:ion:3.1.0'
     implementation 'org.osmdroid:osmdroid-android:6.1.13'
     implementation 'org.apache.httpcomponents:httpcore:4.4.15'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.7'

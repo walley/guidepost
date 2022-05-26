@@ -234,6 +234,8 @@ public class basic extends AppCompatActivity
   @Override
   public boolean onNavigationItemSelected(MenuItem item)
   {
+    Log.i(TAG, "onNavigationItemSelected(): ...");
+
     // Handle navigation view item clicks here.
     int id = item.getItemId();
 
@@ -546,6 +548,7 @@ public class basic extends AppCompatActivity
 
     Log.i(TAG, bbox_param.toString());
 
+    // Ion.getDefault(context).getConscryptMiddleware().enable(false);
     Ion.with(context)
             .load("https://api.openstreetmap.social/table/all?output=json&bbox=" + bbox_param.toString())
             .asJsonArray()
@@ -615,7 +618,7 @@ public class basic extends AppCompatActivity
                     lat = item_json.get(1).getAsDouble();
                     lon = item_json.get(2).getAsDouble();
                     img = item_json.get(3).getAsString();
-                    //double lon = item_json.get(4).getAsDouble();
+                    //4
                     author = item_json.get(5).getAsString();
 
                     if (item_json.get(6).toString().equals("null")) {
@@ -664,7 +667,6 @@ public class basic extends AppCompatActivity
                     final Marker gp_marker = new Marker(map);
 
                     try {
-//                    gp_marker.setSnippet(snippet.toString());
                       gp_marker.setSnippet(testtest);
                       gp_marker.setInfoWindow(wi);
                       gp_marker.setTitle("Guidepost id " + id);
@@ -835,9 +837,8 @@ public class basic extends AppCompatActivity
             R.id.nav_manage,
             R.id.nav_share,
             R.id.nav_send
-    )
-            .setOpenableLayout(drawer)
-            .build();
+    ).setOpenableLayout(drawer).build();
+
     NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
     NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
     NavigationUI.setupWithNavController(navigationView, navController);
