@@ -54,6 +54,9 @@ import android.content.res.AssetFileDescriptor;
 
 import java.io.FileNotFoundException;
 
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import android.view.ViewTreeObserver;
@@ -519,6 +522,46 @@ public class share extends AppCompatActivity
   }
 
   /******************************************************************************/
+  public void upload_file_with_ion(Context context, String author, String lat, String lon)
+  /******************************************************************************/
+  {
+    CheckBox check_remember = (CheckBox) findViewById(R.id.check_remember);
+    if (check_remember.isChecked()) {
+      store_author(author);
+    }
+
+    File fi = new File(filename_from_uri(uri));
+    String uri = "http://api.openstreetmap.social/php/guidepost.php";
+
+    Ion.with(context)
+            .load("POST", uri)
+            .uploadProgressHandler(new ProgressCallback()
+            {
+              @Override
+              public void onProgress(long uploaded, long total)
+              {
+                System.out.println("uploaded " + (int) uploaded + " Total: " + total);
+              }
+            })
+            .setMultipartParameter("action", "file")
+            .setMultipartParameter("action", "file")
+            .setMultipartParameter("source", "mobile")
+            .setMultipartParameter("author", author)
+            .setMultipartParameter("lat", lat)
+            .setMultipartParameter("lon", lon)
+            .setMultipartParameter("license", "CCBYSA4")
+            .setMultipartFile("uploadedfile", fi).asString()
+            .setCallback(new FutureCallback<String>()
+            {
+              @Override
+              public void onCompleted(Exception e, String result)
+              {
+                Log.i(TAG, "upload_file_with_ion():Completed");
+              }
+            });
+  }
+
+  /******************************************************************************/
   public void store_prefs(String key, String value)
   /******************************************************************************/
   {
@@ -608,7 +651,7 @@ public class share extends AppCompatActivity
   {
 //PERMISSION_GRANTED Constant Value: 0 (0x00000000)
 //PERMISSION_DENIED Constant Value: -1 (0xffffffff)
-    Log.e(TAG, "request:" + request);
+    Log.i(TAG, "request:" + request);
     if (request == 1337) {
       Log.i(TAG, "Received response for contact permissions request.");
       Log.i(TAG, "l:" + permissions.length);
