@@ -19,6 +19,7 @@ along with Guidepost.  If not, see <http://www.gnu.org/licenses/>.
 
 package org.walley.guidepost;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import android.Manifest;
@@ -66,18 +67,24 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -272,7 +279,7 @@ public class basic extends AppCompatActivity
   {
 //PERMISSION_GRANTED Constant Value: 0 (0x00000000)
 //PERMISSION_DENIED Constant Value: -1 (0xffffffff)
-    Log.e(TAG, "request:" + request);
+    Log.i(TAG, "request:" + request);
     if (request == 1337) {
       Log.i(TAG, "Received response for contact permissions request.");
       Log.i(TAG, "l:" + permissions.length);
@@ -439,11 +446,15 @@ public class basic extends AppCompatActivity
   {
 
     String[] tags_array = tags.split(";");
+    String colapsible = "";
 
     try {
       InputStream is = getResources().openRawResource(R.raw.colapsible);
-      String colapsible = IOUtils.toString(is);
-      IOUtils.closeQuietly(is);
+
+      try (Scanner scanner = new Scanner(is, StandardCharsets.UTF_8.name())) {
+        colapsible = scanner.useDelimiter("\\A").next();
+      }
+
       colapsible = colapsible.replace("[*note*]", note);
 
       snippet.append("<!DOCTYPE html>");
@@ -452,7 +463,7 @@ public class basic extends AppCompatActivity
       snippet.append("<head>");
       snippet.append(
               "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
-      snippet.append("</head>");
+      snippet.append("</head>\n");
 
       snippet.append("<body>");
       snippet.append(
@@ -464,34 +475,40 @@ public class basic extends AppCompatActivity
       snippet.append("<a href='https://api.openstreetmap.social/").append(img).append(
               "'>");
       snippet.append(
-              "<img height='150' src='http://api.openstreetmap.social/p/phpThumb.php?h=150&src=http://api.openstreetmap.social/").append(
+              "<img height='150' src='https://api.openstreetmap.social/p/phpThumb.php?h=150&src=https://api.openstreetmap.social/").append(
               img).append("'>");
-      snippet.append("</a> <br>");
+      snippet.append("</a> <br>\n");
 
       snippet.append("<ul>");
       snippet.append("<li>image:").append(img);
       snippet.append("<li>author:").append(author);
       snippet.append("<li>ref:").append(ref);
       snippet.append("<li>license:").append(license);
-      snippet.append("</ul>");
+      snippet.append("</ul><tr>\n");
       snippet.append(colapsible);
 
       InputStream is_tags = getResources().openRawResource(R.raw.tags);
-      String css_tags = IOUtils.toString(is_tags);
-      IOUtils.closeQuietly(is_tags);
 
-      snippet.append("<h3>tags:</h3>").append(css_tags);
+      String css_tags = "";
+      try (Scanner scanner = new Scanner(is_tags, StandardCharsets.UTF_8.name())) {
+        css_tags = scanner.useDelimiter("\\A").next();
+      }
+
+      snippet.append("<h3>tags:</h3>\n").append(css_tags);
       snippet.append("<p>");
       for (String s : tags_array) {
         snippet.append("<span class='t'>");
         snippet.append(s);
         snippet.append("</span>");
       }
-      snippet.append("</p>");
+      snippet.append("</p>\n");
 
-      snippet.append("</body></html>");
+      snippet.append(".</body>\n</html>");
+
+      Log.d(TAG, "get_bubble_html:all " + snippet);
+
     } catch (Exception e) {
-      Log.e(TAG, "exception setting " + e.toString());
+      Log.e(TAG, "get_bubble_html: exception setting " + e.toString());
     }
     return snippet.toString();
   }

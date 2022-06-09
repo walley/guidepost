@@ -88,7 +88,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /*START OF CLASS***************************************************************/
 public class share extends AppCompatActivity
-        /*START OF CLASS***************************************************************/
+/*START OF CLASS***************************************************************/
 {
 
   public static final String TAG = "GP-SHARE";
