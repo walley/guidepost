@@ -221,7 +221,7 @@ public class share extends AppCompatActivity
             + ","
             + lon_coord.getText();
 
-    Log.i(TAG, mapic_url);
+    Log.i(TAG, "place_map:" + mapic_url);
 
     UrlImageViewHelper.setUrlDrawable(image_map, mapic_url, R.drawable.placeholder);
   }
@@ -239,9 +239,9 @@ public class share extends AppCompatActivity
           if (image_map.getViewTreeObserver().isAlive()) {
             int map_height = image_map.getMeasuredHeight();
             int map_width = image_map.getMeasuredWidth();
-            Log.i(TAG, "1 imageview dimensions:" + map_width + " x " + map_height);
+            Log.i(TAG, "prepare_map(): imageview dimensions:" + map_width + " x " + map_height);
             place_map(map_width, map_height);
-            image_map.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            image_map.getViewTreeObserver().removeOnGlobalLayoutListener(this);
           }
         }
       });
@@ -298,7 +298,7 @@ public class share extends AppCompatActivity
         } else {
           String author = (String) text_author.getText().toString();
           Log.d("GP", "upload " + author);
-          upload_file(context, author, text_lat, text_lon);
+          upload_file_with_ion(context, author, text_lat, text_lon);
           Log.d("GP", "after upload " + author);
         }
       }
@@ -543,7 +543,6 @@ public class share extends AppCompatActivity
                 System.out.println("uploaded " + (int) uploaded + " Total: " + total);
               }
             })
-            .setMultipartParameter("action", "file")
             .setMultipartParameter("action", "file")
             .setMultipartParameter("source", "mobile")
             .setMultipartParameter("author", author)
