@@ -43,6 +43,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -53,6 +54,7 @@ import android.graphics.BitmapFactory;
 import android.content.res.AssetFileDescriptor;
 
 import java.io.FileNotFoundException;
+import java.util.Objects;
 
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -108,6 +110,7 @@ public class share extends AppCompatActivity
   private OkHttpClient mHttpClient;
   private Uri uri;
   private EditText text_author;
+  ProgressBar pb_upload;
 
 
   /******************************************************************************/
@@ -136,12 +139,9 @@ public class share extends AppCompatActivity
     Cursor cursor = getContentResolver().query(content_uri, null, null, null, null);
     try {
       if (cursor.moveToFirst()) {
-        Log.i(TAG, "filename_from_uri cursor0 " + cursor.getString(0));
-        Log.i(TAG, "filename_from_uri cursor1 " + cursor.getString(1));
         int data_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
         int name_index = cursor.getColumnIndex("_display_name");
         int size_index = cursor.getColumnIndex("_size");
-        Log.i(TAG, "data name" + data_index + " " + name_index);
 
         if (data_index >= 0) {
           res = cursor.getString(data_index);
@@ -152,11 +152,11 @@ public class share extends AppCompatActivity
         }
       }
     } catch (Exception e) {
-      Log.e(TAG, "filename_from_uri new failed:" + e.toString());
+      Log.e(TAG, "filename_from_uri() failed:" + e.toString());
       e.printStackTrace();
     }
     cursor.close();
-    Log.i(TAG, "filename_from_uri res:" + res);
+    Log.i(TAG, "filename_from_uri() res:" + res);
     return res;
   }
 
@@ -269,9 +269,12 @@ public class share extends AppCompatActivity
     lon_coord = (EditText) findViewById(R.id.lon_coord);
     text_author = (EditText) findViewById(R.id.text_author);
     image_map = (ImageView) findViewById(R.id.image_map);
+    pb_upload = (ProgressBar) findViewById(R.id.pb_upload);
+
+    pb_upload.setProgress(0);
 
     String author_pref = load_prefs("author");
-    if (author_pref != "") {
+    if (!Objects.equals(author_pref, "")) {
       text_author.setText(author_pref);
     }
 
@@ -356,6 +359,7 @@ public class share extends AppCompatActivity
     });
 
     if (Intent.ACTION_SEND.equals(action)) {
+      assert extras != null;
       if (extras.containsKey(Intent.EXTRA_STREAM)) {
 
         uri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
@@ -529,9 +533,9 @@ public class share extends AppCompatActivity
     if (check_remember.isChecked()) {
       store_author(author);
     }
-
+    Log.d(TAG, "upload_ion(): a: " + author + " lat:" + lat + " lon:" + lon);
     File fi = new File(filename_from_uri(uri));
-    String uri = "http://api.openstreetmap.social/php/guidepost.php";
+    String uri = "https://api.openstreetmap.social/php/guidepost.php";
 
     Ion.with(context)
             .load("POST", uri)
@@ -540,7 +544,9 @@ public class share extends AppCompatActivity
               @Override
               public void onProgress(long uploaded, long total)
               {
-                System.out.println("uploaded " + (int) uploaded + " Total: " + total);
+                float percent = (uploaded * 100) / total;
+                Log.i(TAG, "uploaded " + (int) uploaded + "/" + total + ":" + percent + "%");
+                pb_upload.setProgress(Math.round(percent));
               }
             })
             .setMultipartParameter("action", "file")
@@ -556,6 +562,7 @@ public class share extends AppCompatActivity
               public void onCompleted(Exception e, String result)
               {
                 Log.i(TAG, "upload_file_with_ion():Completed");
+                post_execute(result);
               }
             });
   }
@@ -567,7 +574,7 @@ public class share extends AppCompatActivity
     SharedPreferences.Editor prefs;
     prefs = getApplicationContext().getSharedPreferences("guidepost", 0).edit();
     prefs.putString(key, value);
-    prefs.commit();
+    prefs.apply();
   }
 
   /******************************************************************************/
@@ -734,22 +741,8 @@ public class share extends AppCompatActivity
       try {
         //httpClient = new DefaultHttpClient();
         httpClient = new OkHttpClient();
-        //       httpContext = new BasicHttpContext();
-        //       HttpEntity entity = null;
-
         String serverPath = "http://api.openstreetmap.social/php/guidepost.php";
-        //       post_request = new HttpPost(serverPath);
 
-        /*cme multipart_content = new cme(
-                new ProgressListener()
-                {
-                  @Override
-                  public void transferred(long value)
-                  {
-                    publishProgress((int) ((value / (float) post_total_size) * 100));
-                  }
-                });
-*/
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("action", "file")
