@@ -114,22 +114,6 @@ public class share extends AppCompatActivity
 
 
   /******************************************************************************/
-  public String filename_from_uri_deprecated(Uri content_uri)
-  /******************************************************************************/
-  {
-    try {
-      String[] proj = {MediaStore.Images.Media.DATA};
-      Cursor cursor = managedQuery(content_uri, proj, null, null, null);
-      int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-      cursor.moveToFirst();
-      return cursor.getString(column_index);
-    } catch (Exception e) {
-      Log.e(TAG, "filename_from_uri deprecated failed");
-      return content_uri.getPath();
-    }
-  }
-
-  /******************************************************************************/
   public String filename_from_uri(Uri content_uri)
   /******************************************************************************/
   {
