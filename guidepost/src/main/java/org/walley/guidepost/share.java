@@ -209,6 +209,7 @@ public class share extends AppCompatActivity
 
     Log.i(TAG, "place_map:" + mapic_url);
 
+//FIXME replace with ION or https://square.github.io/picasso/
     UrlImageViewHelper.setUrlDrawable(image_map, mapic_url, R.drawable.placeholder);
   }
 
