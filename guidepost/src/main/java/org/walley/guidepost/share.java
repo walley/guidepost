@@ -30,9 +30,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.ExifInterface;
-//compile "com.android.support:exifinterface:25.1.0"
-//android.support.media.ExifInterface
+
+import androidx.exifinterface.media.ExifInterface;
+
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -76,6 +76,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -111,7 +113,7 @@ public class share extends AppCompatActivity
   private Uri uri;
   private EditText text_author;
   ProgressBar pb_upload;
-
+  String server_uri = "https://api.openstreetmap.social/php/guidepost.php";
 
   /******************************************************************************/
   public String filename_from_uri(Uri content_uri)
@@ -286,6 +288,7 @@ public class share extends AppCompatActivity
           String author = (String) text_author.getText().toString();
           Log.d("GP", "upload " + author);
           upload_file_with_ion(context, author, text_lat, text_lon);
+          //         upload_file_with_okhttp3(context, author, text_lat, text_lon);
           Log.d("GP", "after upload " + author);
         }
       }
@@ -422,24 +425,30 @@ public class share extends AppCompatActivity
 
     try {
       model = exif.getAttribute(ExifInterface.TAG_MODEL);
-      Log.i(TAG, "exif get model:" + model);
+      Log.i(TAG, "get_exif_data(): get model:" + model);
     } catch (Exception e) {
-      Log.e(TAG, "exif getattribute error: " + e.toString());
+      Log.e(TAG, "get_exif_data(): getattribute error: " + e.toString());
     }
 
     try {
-      if (exif.getLatLong(output)) {
-        float lat = output[0];
-        float lon = output[1];
-        lat_coord.setText(Float.toString(lat));
-        lon_coord.setText(Float.toString(lon));
+      double[] x;
+//      if (exif.getLatLong(output)) {
+//        float lat = output[0];
+//        float lon = output[1];
+      if (exif.getLatLong() != null) {
+        x = exif.getLatLong();
+        double lat = x[0];
+        double lon = x[1];
+        lat_coord.setText(Double.toString(lat));
+        lon_coord.setText(Double.toString(lon));
+        Log.i(TAG, "get_exif_data():" + lat + "," + lon);
       } else {
-        Log.i(TAG, "getlatlong returned false");
+        Log.i(TAG, "get_exif_data():getlatlong returned false");
         lat_coord.setText("0");
         lon_coord.setText("0");
       }
     } catch (Exception e) {
-      Log.e(TAG, "exif getlatlong error: " + e.toString());
+      Log.e(TAG, "get_exif_data(): getlatlong error: " + e.toString());
     }
   }
 
@@ -489,24 +498,71 @@ public class share extends AppCompatActivity
     return fi.length();
   }
 
-  /******************************************************************************/
-  public void upload_file(Context context, String author, String lat, String lon)
-  /******************************************************************************/
+  public void upload_file_with_okhttp3(Context context, String author, String lat, String lon)
   {
-    CheckBox check_remember = (CheckBox) findViewById(R.id.check_remember);
-    if (check_remember.isChecked()) {
-      store_author(author);
+
+    File file = new File(filename_from_uri(uri));
+
+    OkHttpClient client = new OkHttpClient();
+
+    try {
+
+      RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+              .addFormDataPart(
+                      "uploadedfile", file.getName(),
+                      RequestBody.create(file, MediaType.parse("image/jpeg"))
+                              )
+              .addFormDataPart("action", "file")
+              .addFormDataPart("source", "mobile")
+              .addFormDataPart("author", author)
+              .addFormDataPart("lat", lat)
+              .addFormDataPart("lon", lon)
+              .addFormDataPart("license", "CCBYSA4")
+              .build();
+
+      Request request = new Request.Builder()
+              .url(server_uri)
+              .post(requestBody)
+              .build();
+
+      client.newCall(request).enqueue(new Callback()
+      {
+
+        @Override
+        public void onFailure(final Call call, final IOException e)
+        {
+          // Handle the error
+        }
+
+        @Override
+        public void onResponse(final Call call, final Response result) throws IOException
+        {
+          Log.i(TAG, "upload_file_with_okhttp3():Sent, " + result.toString());
+          int status = result.code();
+          runOnUiThread(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              Toast.makeText(getApplicationContext(), "SMS Sent!", Toast.LENGTH_SHORT).show();
+              if (status == 200) {
+                post_execute(result.toString());
+                Log.i(TAG, "upload_file_with_okhttp3(): Done");
+              } else {
+                Log.i(TAG, "upload_file_with_okhttp3(): not successful");
+              }
+            }
+          });
+        }
+      });
+
+    } catch (Exception ex) {
+      // Handle the error
     }
+  }
 
-    if (context == null) {
-      Log.e("GP", "null context");
-    }
-
-    File fi = new File(filename_from_uri(uri));
-
-    HttpMultipartPost hmp = new HttpMultipartPost(context, author, lat, lon, fi);
-    hmp.execute();
-    Log.d("GP", "after execute");
+  public void upload_file_with_okhttp3_and_progress()
+  {
   }
 
   /******************************************************************************/
@@ -519,27 +575,29 @@ public class share extends AppCompatActivity
     }
     Log.d(TAG, "upload_ion(): a: " + author + " lat:" + lat + " lon:" + lon);
     File fi = new File(filename_from_uri(uri));
-    String uri = "https://api.openstreetmap.social/php/guidepost.php";
 
     Ion.with(context)
-            .load("POST", uri)
+            .load("POST", server_uri)
+            .setLogging(TAG + "ion", Log.VERBOSE)
             .uploadProgressHandler(new ProgressCallback()
             {
               @Override
               public void onProgress(long uploaded, long total)
               {
                 float percent = (uploaded * 100) / total;
-                Log.i(TAG, "uploaded " + (int) uploaded + "/" + total + ":" + percent + "%");
+                //Log.d(TAG, "uploaded " + (int) uploaded + "/" + total + ":" + percent + "%");
                 pb_upload.setProgress(Math.round(percent));
               }
             })
+            .setMultipartParameter("yo", "yay")
             .setMultipartParameter("action", "file")
             .setMultipartParameter("source", "mobile")
             .setMultipartParameter("author", author)
             .setMultipartParameter("lat", lat)
             .setMultipartParameter("lon", lon)
             .setMultipartParameter("license", "CCBYSA4")
-            .setMultipartFile("uploadedfile", fi).asString()
+//            .setMultipartFile("uploadedfile", fi)
+            .asString()
             .setCallback(new FutureCallback<String>()
             {
               @Override
@@ -661,134 +719,6 @@ public class share extends AppCompatActivity
       Log.e(TAG, "not our request?");
       super.onRequestPermissionsResult(request, permissions, results);
     }
-  }
-
-  /******************************************************************************/
-  public class HttpMultipartPost extends AsyncTask<String, Integer, String>
-          /******************************************************************************/
-  {
-    private Context context;
-    private String author;
-    private String lat;
-    private String lon;
-    private File image;
-    private ProgressDialog pd;
-    private long post_total_size;
-
-    private OkHttpClient httpClient;
-
-    public HttpMultipartPost(Context context, String author, String lat, String lon, File image)
-    {
-      this.context = context;
-      this.author = author;
-      this.lat = lat;
-      this.lon = lon;
-      this.image = image;
-    }
-
-    @Override
-    protected void onPreExecute()
-    {
-
-      if (context == null) {
-        Log.e(TAG, "null context");
-      }
-
-      pd = new ProgressDialog(context);
-      pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-      String uploading_string = getResources().getString(R.string.uploading);
-      pd.setMessage(uploading_string);
-      pd.setCancelable(false);
-
-      // Set a click listener for progress dialog cancel button
-      pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener()
-      {
-        @Override
-        public void onClick(DialogInterface dialog, int which)
-        {
-          pd.dismiss();
-          try {
-            //post_request.abort();
-          } catch (Exception e) {
-            Log.e(TAG, "post abort failed: " + e.toString());
-          }
-        }
-      });
-
-      pd.show();
-    }
-
-    @Override
-    protected String doInBackground(String... params)
-    {
-      String serverResponse = null;
-      try {
-        //httpClient = new DefaultHttpClient();
-        httpClient = new OkHttpClient();
-        String serverPath = "http://api.openstreetmap.social/php/guidepost.php";
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("action", "file")
-                .addFormDataPart("source", "mobile")
-                .addFormDataPart("author", author)
-                .addFormDataPart("lat", lat)
-                .addFormDataPart("lon", lon)
-                .addFormDataPart("license", "CCBYSA4")
-                .addFormDataPart(
-                        "uploadedfile",
-                        "img.txt",
-                        RequestBody.create(
-                                MediaType.parse("application/octet-stream"),
-                                image
-                                          )
-                                ).build();
-
-
-        Request request = new Request.Builder()
-                .url(serverPath)
-                .post(requestBody)
-                .build();
-
-        try (Response response = httpClient.newCall(request).execute()) {
-
-          if (!response.isSuccessful()) {
-            throw new IOException("Unexpected code " + response);
-          }
-
-
-          Log.i(TAG, "doInBackground server response:" + serverResponse);
-
-        } catch (Exception e) {
-          e.printStackTrace();
-          serverResponse = "0-client side error uploading";
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-      return serverResponse;
-    }
-
-    @Override
-    protected void onProgressUpdate(Integer... progress)
-    {
-      pd.setProgress((int) (progress[0]));
-    }
-
-    @Override
-    protected void onPostExecute(String result)
-    {
-      Log.i(TAG, "onPostExecute" + result);
-      pd.dismiss();
-      post_execute(result);
-    }
-
-    @Override
-    protected void onCancelled()
-    {
-      post_execute("0-canceled");
-    }
-
   }
 
 }

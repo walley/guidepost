@@ -126,7 +126,6 @@ public class basic extends AppCompatActivity
   MapView map = null;
   MyLocationNewOverlay location_overlay;
   NavigationView navigationView;
-//  Toolbar toolbar;
   wlocation gps;
   String current_photo;
   wclusterer gp_marker_cluster;
@@ -287,7 +286,9 @@ public class basic extends AppCompatActivity
         Log.i(TAG, "perm,res:" + permissions[i] + results[i]);
         switch (permissions[i]) {
           case "android.permission.ACCESS_FINE_LOCATION":
-            if (results[i] == PERMISSION_GRANTED) {
+            if (results[i] != PERMISSION_GRANTED) {
+              Toast.makeText(
+                      context, "No WRITE_EXTERNAL_STORAGE, sorry", Toast.LENGTH_SHORT).show();
             }
             break;
           case "android.permission.WRITE_EXTERNAL_STORAGE":
@@ -614,11 +615,9 @@ public class basic extends AppCompatActivity
                   }
                 }
 
-                KMeans1 km1 = new KMeans1(res_size, "test");
+//                KMeans1 km1 = new KMeans1(res_size, "test");
                 KMeans2 km2 = new KMeans2(res_size);
 
-//                create_gp_cluster_overlay(gp_marker_cluster);
-//                create_gp_cluster_overlay();
                 remove_overlays();
                 JsonArray item_json;
                 // do stuff with the result or error
@@ -673,7 +672,7 @@ public class basic extends AppCompatActivity
                   }
 
                   if (cluster_amount > 0) {
-                    km1.add(lat, lon);
+                    //km1.add(lat, lon);
                     km2.add(lat, lon);
                   }
                   if (id == 0) {
@@ -725,13 +724,13 @@ public class basic extends AppCompatActivity
                 long endTime;
                 if (cluster_amount > 0) {
 
-                  startTime = System.nanoTime();
+/*                  startTime = System.nanoTime();
                   Log.i(TAG, "clustering 1 ...");
                   km1.clustering(cluster_amount, 10, null); //clusters, iterations
                   Log.i(TAG, "done 1 ...");
                   endTime = System.nanoTime();
                   Log.i(TAG, "execution time:" + (endTime - startTime) / 1000000.0);
-
+*/
                   startTime = System.nanoTime();
                   Log.i(TAG, "clustering 2 ...");
                   km2.create_clusters(cluster_amount, 10); //clusters, iterations
@@ -816,7 +815,6 @@ public class basic extends AppCompatActivity
       }
     }, 200));
 
-//    create_gp_cluster_overlay(wclusterer);
   }
 
   void move_to_default_position()
@@ -838,7 +836,6 @@ public class basic extends AppCompatActivity
       current_point = new GeoPoint(latitude, longitude);
     }
 
-    map_controller.setZoom(13);
     map_controller.zoomTo(13.0);
     map_controller.setCenter(current_point);
   }

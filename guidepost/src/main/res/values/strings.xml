@@ -65,6 +65,7 @@ you must use share with ... function from other apps such as camera.
   </string>
   <string name="attachment_summary_off">Only download attachments when manually requested</string>
   <string name="uploader_name">android</string>
+  <string name="menu_map">Map</string>
 
 
 </resources>
