@@ -597,7 +597,7 @@ public class share extends AppCompatActivity
             .setMultipartParameter("lat", lat)
             .setMultipartParameter("lon", lon)
             .setMultipartParameter("license", "CCBYSA4")
-//            .setMultipartFile("uploadedfile", fi)
+            .setMultipartFile("uploadedfile", fi)
             .asString()
             .setCallback(new FutureCallback<String>()
             {
