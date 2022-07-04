@@ -20,8 +20,6 @@ android {
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
             storeFile file('/home/walley/src/androidkey/my-release-key.keystore')
             keyAlias 'walley'
-            storePassword 'aaaaaa'
-            keyPassword 'aaaaaa'
         }
     }
     buildFeatures {
