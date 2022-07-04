@@ -20,6 +20,8 @@ android {
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
             storeFile file('/home/walley/src/androidkey/my-release-key.keystore')
             keyAlias 'walley'
+            storePassword 'aaaaaa'
+            keyPassword 'aaaaaa'
         }
     }
     buildFeatures {
@@ -52,10 +54,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
-    implementation 'androidx.navigation:navigation-fragment:2.4.2'
-    implementation 'androidx.navigation:navigation-ui:2.4.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
+    implementation 'androidx.navigation:navigation-fragment:2.5.0'
+    implementation 'androidx.navigation:navigation-ui:2.5.0'
     implementation 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'
     implementation 'com.github.MKergall:osmbonuspack:6.7.0'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
@@ -63,7 +65,7 @@ dependencies {
     implementation 'org.osmdroid:osmdroid-android:6.1.13'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.8'
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
-    implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.exifinterface:exifinterface:1.3.2'
+    implementation 'androidx.preference:preference:1.2.0'
+    implementation 'androidx.exifinterface:exifinterface:1.3.3'
 
 }
