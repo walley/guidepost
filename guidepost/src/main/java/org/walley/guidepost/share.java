@@ -59,7 +59,7 @@ import java.util.Objects;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
-import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
+//import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -210,7 +210,17 @@ public class share extends AppCompatActivity
     Log.i(TAG, "place_map:" + mapic_url);
 
 //FIXME replace with ION or https://square.github.io/picasso/
-    UrlImageViewHelper.setUrlDrawable(image_map, mapic_url, R.drawable.placeholder);
+//    UrlImageViewHelper.setUrlDrawable(image_map, mapic_url, R.drawable.placeholder);
+    Ion.with(image_map)
+            .placeholder(R.drawable.placeholder)
+            .error(R.drawable.error)
+            .animateLoad()
+            .load(mapic_url);
+
+//            .error(R.drawable.error_image)
+//            .animateLoad(spinAnimation)
+//          .animateIn(fadeInAnimation)
+
   }
 
   /******************************************************************************/
