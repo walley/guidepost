@@ -266,13 +266,18 @@ public class basic extends AppCompatActivity
   {
 //PERMISSION_GRANTED Constant Value: 0 (0x00000000)
 //PERMISSION_DENIED Constant Value: -1 (0xffffffff)
-    Log.i(TAG, "request:" + request);
+    Log.d(TAG, "onRequestPermissionsResult(): request=" + request);
     if (request == 1337) {
-      Log.i(TAG, "Received response for contact permissions request.");
-      Log.i(TAG, "l:" + permissions.length);
+      Log.i(TAG, "onRequestPermissionsResult():" + permissions.length);
       for (int i = 0; i < permissions.length; i++) {
-        Log.i(TAG, "perm,res:" + permissions[i] + results[i]);
+        Log.i(TAG, "onRequestPermissionsResult(): perm,res=" + permissions[i] + "," + results[i]);
         switch (permissions[i]) {
+          case "android.permission.ACCESS_MEDIA_LOCATION":
+            if (results[i] != PERMISSION_GRANTED) {
+              Toast.makeText(
+                      context, "No ACCESS_MEDIA_LOCATION, sorry", Toast.LENGTH_SHORT).show();
+            }
+            break;
           case "android.permission.ACCESS_FINE_LOCATION":
             if (results[i] != PERMISSION_GRANTED) {
               Toast.makeText(
@@ -338,63 +343,58 @@ public class basic extends AppCompatActivity
   void request_permission()
   {
     List<String> permissions = new ArrayList<>();
+    Log.i(TAG, "request_permission(): init");
+
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_MEDIA_LOCATION) != PERMISSION_GRANTED) {
+      permissions.add(android.Manifest.permission.ACCESS_MEDIA_LOCATION);
+    } else {
+      Log.i(TAG, "request_permission(): ACCESS_MEDIA_LOCATION");
+    }
 
     if (ActivityCompat.checkSelfPermission(
             this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
       permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    } else {
+      Log.i(TAG, "request_permission(): WRITE_EXTERNAL_STORAGE");
     }
+
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+      permissions.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+    } else {
+      Log.i(TAG, "request_permission(): READ_EXTERNAL_STORAGE");
+    }
+
     if (ActivityCompat.checkSelfPermission(
             this, Manifest.permission.CAMERA) != PERMISSION_GRANTED) {
       permissions.add(android.Manifest.permission.CAMERA);
+    } else {
+      Log.i(TAG, "request_permission(): CAMERA");
     }
+
     if (ActivityCompat.checkSelfPermission(
             this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
       permissions.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+    } else {
+      Log.i(TAG, "request_permission(): ACCESS_FINE_LOCATION");
     }
 
     ActivityCompat.requestPermissions(
-            this, permissions.toArray(new String[permissions.size()]), 1337);
-    Log.i(TAG, "Permission request");
+            this,
+            permissions.toArray(new String[permissions.size()]),
+            1337
+                                     );
   }
 
-  void request_permissionx()
-  {
-    if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
 
-      // Permission is not granted
-      // Should we show an explanation?
-      if (ActivityCompat.shouldShowRequestPermissionRationale(
-              this,
-              Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                                             )) {
-        // Show an explanation to the user *asynchronously* -- don't block
-        // this thread waiting for the user's response! After the user
-        // sees the explanation, try again to request the permission.
-      } else {
-        // No explanation needed; request the permission
-        ActivityCompat.requestPermissions(
-                this,
-                new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                1337
-                                         );
-
-      }
-    } else {
-      Log.i(TAG, "Permission has already been granted");
-    }
-  }
 
   private void remove_overlays()
   {
     Log.i(TAG, "number of overlays from manager: " + map.getOverlayManager().size());
     Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
-//  for (int i=0; i < map.getOverlays().size(); i++) {
-//    map.getOverlays().get(i)...remove();
-//  }
     map.getOverlays().clear();
     map.getOverlays().add(location_overlay);
-
     Log.i(TAG, "number of overlays from manager: " + map.getOverlayManager().size());
     Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
   }
@@ -404,12 +404,10 @@ public class basic extends AppCompatActivity
   {
     Log.i(TAG, "number of overlays from manager: " + map.getOverlayManager().size());
     Log.i(TAG, "number of overlays from overlays: " + map.getOverlays().size());
-
     Log.i(TAG, "gp_overlay_number: " + gp_overlay_number);
-
-    Log.i(TAG, "clearing markers");
+//    Log.i(TAG, "clearing markers");
 //    gp_marker_cluster.clear_stuff(map);
-    Log.i(TAG, "done");
+//    Log.i(TAG, "done");
 
     try {
       map.getOverlays().remove(gp_overlay_number);

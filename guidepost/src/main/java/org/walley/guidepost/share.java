@@ -54,6 +54,8 @@ import android.graphics.BitmapFactory;
 import android.content.res.AssetFileDescriptor;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.koushikdutta.async.future.FutureCallback;
@@ -253,6 +255,8 @@ public class share extends AppCompatActivity
 
     context = this;
 
+    request_permission();
+
     button_send = (Button) findViewById(R.id.button_send);
     button_cancel = (Button) findViewById(R.id.button_cancel);
 
@@ -320,32 +324,12 @@ public class share extends AppCompatActivity
     {
       public void onClick(View v)
       {
-        Log.d("GP", "map click");
 
         if (ActivityCompat.checkSelfPermission(
-                share.this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
-          ActivityCompat.requestPermissions(
-                  share.this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1337);
-          Log.i(TAG, "Permission");
-          return;
-        }
-
-        if (gps.can_get_location()) {
-          gps.get_gps_location();
-          double latitude = gps.getLatitude();
-          double longitude = gps.getLongitude();
-          Toast.makeText(
-                  getApplicationContext(),
-                  "Your Location is - \nLat: " + latitude + "\nLong: " + longitude,
-                  Toast.LENGTH_LONG
-                        ).show();
-          if (latitude > 0 && longitude > 0) {
-            lat_coord.setText(Double.toString(latitude));
-            lon_coord.setText(Double.toString(longitude));
-          }
+                share.this, Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
+          set_image_location();
         } else {
-          Toast.makeText(getApplicationContext(), "cannot get location", Toast.LENGTH_LONG).show();
-          gps.showSettingsAlert();
+          Log.d("GP", "map click: fine location not granted");
         }
       }
     });
@@ -396,18 +380,23 @@ public class share extends AppCompatActivity
   public void set_image_location()
   /******************************************************************************/
   {
-    gps.get_gps_location();
-    double latitude = gps.getLatitude();
-    double longitude = gps.getLongitude();
-    Toast.makeText(
-            getApplicationContext(),
-            "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG
-                  ).show();
-    if (latitude > 0 && longitude > 0) {
-      lat_coord.setText(Double.toString(latitude));
-      lon_coord.setText(Double.toString(longitude));
+    if (gps.can_get_location()) {
+      gps.get_gps_location();
+      double latitude = gps.getLatitude();
+      double longitude = gps.getLongitude();
+      Toast.makeText(
+              getApplicationContext(),
+              "Your Location is - \nLat: " + latitude + "\nLong: " + longitude,
+              Toast.LENGTH_LONG
+                    ).show();
+      if (latitude > 0 && longitude > 0) {
+        lat_coord.setText(Double.toString(latitude));
+        lon_coord.setText(Double.toString(longitude));
+      }
+    } else {
+      Toast.makeText(getApplicationContext(), "cannot get location", Toast.LENGTH_LONG).show();
+      gps.showSettingsAlert();
     }
-
   }
 
   /******************************************************************************/
@@ -700,7 +689,93 @@ public class share extends AppCompatActivity
             .show();
   }
 
+  void request_permission()
+  {
+    List<String> permissions = new ArrayList<>();
+    Log.i(TAG, "request_permission(): init");
+
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_MEDIA_LOCATION) != PERMISSION_GRANTED) {
+      permissions.add(android.Manifest.permission.ACCESS_MEDIA_LOCATION);
+    } else {
+      Log.i(TAG, "request_permission(): ACCESS_MEDIA_LOCATION");
+    }
+
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+      permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    } else {
+      Log.i(TAG, "request_permission(): WRITE_EXTERNAL_STORAGE");
+    }
+
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+      permissions.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+    } else {
+      Log.i(TAG, "request_permission(): READ_EXTERNAL_STORAGE");
+    }
+
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.CAMERA) != PERMISSION_GRANTED) {
+      permissions.add(android.Manifest.permission.CAMERA);
+    } else {
+      Log.i(TAG, "request_permission(): CAMERA");
+    }
+
+    if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+      permissions.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+    } else {
+      Log.i(TAG, "request_permission(): ACCESS_FINE_LOCATION");
+    }
+
+    ActivityCompat.requestPermissions(
+            this,
+            permissions.toArray(new String[permissions.size()]),
+            1337
+                                     );
+  }
+
   @Override
+  public void onRequestPermissionsResult(int request, String permissions[], int[] results)
+  {
+//PERMISSION_GRANTED Constant Value: 0 (0x00000000)
+//PERMISSION_DENIED Constant Value: -1 (0xffffffff)
+    Log.d(TAG, "onRequestPermissionsResult(): request=" + request);
+    if (request == 1337) {
+      Log.i(TAG, "onRequestPermissionsResult():" + permissions.length);
+      for (int i = 0; i < permissions.length; i++) {
+        Log.i(TAG, "onRequestPermissionsResult(): perm,res=" + permissions[i] + "," + results[i]);
+        switch (permissions[i]) {
+          case "android.permission.ACCESS_MEDIA_LOCATION":
+            if (results[i] != PERMISSION_GRANTED) {
+              Toast.makeText(
+                      context, "No ACCESS_MEDIA_LOCATION, sorry", Toast.LENGTH_SHORT).show();
+            }
+            break;
+          case "android.permission.ACCESS_FINE_LOCATION":
+            if (results[i] == PERMISSION_GRANTED) {
+//              set_image_location();
+            } else {
+              Toast.makeText(
+                      context, "No WRITE_EXTERNAL_STORAGE, sorry", Toast.LENGTH_SHORT).show();
+            }
+            break;
+          case "android.permission.WRITE_EXTERNAL_STORAGE":
+            if (results[i] == PERMISSION_GRANTED) {
+            }
+            break;
+          default:
+            break;
+        }
+      }
+    } else {
+      Log.e("GP", "not our request?");
+      super.onRequestPermissionsResult(request, permissions, results);
+    }
+  }
+
+/*  @Override
   public void onRequestPermissionsResult(int request, String permissions[], int[] results)
   {
 //PERMISSION_GRANTED Constant Value: 0 (0x00000000)
@@ -726,6 +801,7 @@ public class share extends AppCompatActivity
       super.onRequestPermissionsResult(request, permissions, results);
     }
   }
+*/
 
 }
 /*end of class*/
