@@ -209,17 +209,11 @@ public class share extends AppCompatActivity
 
     Log.i(TAG, "place_map:" + mapic_url);
 
-//FIXME replace with ION or https://square.github.io/picasso/
-//    UrlImageViewHelper.setUrlDrawable(image_map, mapic_url, R.drawable.placeholder);
+//NOTE nice thing that does the same https://square.github.io/picasso/
     Ion.with(image_map)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.error)
-            .animateLoad()
             .load(mapic_url);
-
-//            .error(R.drawable.error_image)
-//            .animateLoad(spinAnimation)
-//          .animateIn(fadeInAnimation)
 
   }
 
@@ -357,6 +351,7 @@ public class share extends AppCompatActivity
     });
 
     if (Intent.ACTION_SEND.equals(action)) {
+      //FIXME try ION
       assert extras != null;
       if (extras.containsKey(Intent.EXTRA_STREAM)) {
 
