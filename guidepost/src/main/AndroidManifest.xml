@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:tools="http://schemas.android.com/tools"
-  package="org.walley.guidepost"
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:versionCode="26"
-  android:versionName="1.23">
+  android:versionCode="27"
+  android:versionName="1.24">
 
   <uses-feature android:name="android.hardware.location.gps" />
   <uses-feature
@@ -14,7 +13,9 @@
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission
+    android:name="android.permission.ACCESS_FINE_LOCATION"
+    tools:ignore="CoarseFineLocation" />
   <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
 
   <application
@@ -22,7 +23,8 @@
     android:label="@string/app_name"
     android:allowBackup="true"
     android:theme="@style/Theme.AppCompat"
-    tools:ignore="GoogleAppIndexingWarning">
+    tools:ignore="GoogleAppIndexingWarning"
+    android:requestLegacyExternalStorage="true">
 
     <activity
       android:name=".share"

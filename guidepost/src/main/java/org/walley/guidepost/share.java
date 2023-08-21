@@ -286,7 +286,7 @@ public class share extends AppCompatActivity
         String text_lat = (String) lat_coord.getText().toString();
         String text_lon = (String) lon_coord.getText().toString();
 
-        if (get_file_size() > 10000000) {
+        if (get_file_size() > 15000000) {
           messagebox(getResources().getString(R.string.toobig));
           return;
         }
