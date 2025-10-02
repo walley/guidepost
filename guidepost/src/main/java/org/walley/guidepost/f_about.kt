@@ -1,5 +1,5 @@
 /*
-Copyright 2013-2022 Michal Grézl
+Copyright 2013-2025 Michal Grézl
 
 This file is part of Guidepost.
 
@@ -25,17 +25,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import org.walley.guidepost.BuildConfig;
 
 class f_about : Fragment() {
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     val root = inflater.inflate(R.layout.fragment_about, container, false)
     val textView = root.findViewById<TextView>(R.id.text_slideshow)
 
-    val versionCode = BuildConfig.VERSION_CODE;
-    val versionName = BuildConfig.VERSION_NAME;
+    val versionCode = BuildConfig.VERSION_CODE
+    val versionName = BuildConfig.VERSION_NAME
 
-    textView.text = "about:\n guidepost $versionCode $versionName";
+    "about:\n guidepost $versionCode $versionName".also { textView.text = it }
 
     return root
   }

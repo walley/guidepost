@@ -183,7 +183,7 @@ public class share extends AppCompatActivity
   /******************************************************************************/
   {
     /* this need referrer:(
-    String mapic_url = "http://staticmap.openstreetmap.de/staticmap.php?center="
+    String mapic_url = "http://stgoogaticmap.openstreetmap.de/staticmap.php?center="
                        + lat_coord.getText()
                        + ","
                        + lon_coord.getText()

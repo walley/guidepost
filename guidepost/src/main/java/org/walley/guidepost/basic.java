@@ -22,7 +22,6 @@ package org.walley.guidepost;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -76,10 +75,10 @@ import java.util.Scanner;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.WindowCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -129,23 +128,60 @@ public class basic extends AppCompatActivity
     drawer = binding.drawerLayout;
     navigationView = binding.navView;
 
+    WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
     setContentView(binding.getRoot());
 
+/*    Toolbar toolbar = binding.toolbar; // Example
+    NestedScrollView mainContent = binding.mainContentScrollView; // Example
+
+
+    setSupportActionBar(toolbar); // If you're using it as an ActionBar
+
+    // 2. Handle Insets
+    // Apply insets to the Toolbar (typically top padding)
+    ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, windowInsets) -> {
+      Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+      // Apply the top inset as padding to the Toolbar
+      // v.setPadding(v.getPaddingLeft(), insets.top, v.getPaddingRight(), v.getPaddingBottom());
+      // A more robust way using existing padding:
+      ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+      mlp.topMargin = insets.top;
+      v.setLayoutParams(mlp); // If you want to use margin for the toolbar itself
+      // Or, if the toolbar has its own content that needs padding:
+      // v.setPadding(v.getPaddingLeft(), insets.top, v.getPaddingRight(), v.getPaddingBottom());
+
+      // Return CONSUMED to prevent other listeners from overriding this behavior
+      return WindowInsetsCompat.CONSUMED;
+    });
+
+    // Apply insets to your main content area (typically bottom padding, also left/right for gestures)
+    ViewCompat.setOnApplyWindowInsetsListener(mainContent, (v, windowInsets) -> {
+      Insets insets = windowInsets.getInsets(
+              WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.ime()
+                                            );
+      // Apply insets as padding to the main content area
+      v.setPadding(insets.left, v.getPaddingTop(), insets.right, insets.bottom);
+
+      // If you have a FloatingActionButton or BottomNavigationView inside this mainContent
+      // that is anchored to the bottom, you might need to adjust its margin specifically.
+
+      // Return CONSUMED
+      return WindowInsetsCompat.CONSUMED;
+    });
+*/
     Ion.getDefault(context).configure().setLogging(TAG, Log.INFO);
     request_permission();
-
     create_ui();
-
     gp_marker_cluster = new wclusterer(context);
 
     if (ActivityCompat.checkSelfPermission(
             this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
       Toast.makeText(context, "I need WRITE_EXTERNAL_STORAGE, sorry", Toast.LENGTH_SHORT).show();
-      //  finish();
-    } else {
-      create_map();
-      move_to_default_position();
     }
+
+    create_map();
+    move_to_default_position();
 
     gps = new wlocation(basic.this);
 
@@ -367,6 +403,13 @@ public class basic extends AppCompatActivity
     }
 
     if (ActivityCompat.checkSelfPermission(
+            this, Manifest.permission.READ_MEDIA_IMAGES) != PERMISSION_GRANTED) {
+      permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
+    } else {
+      Log.i(TAG, "request_permission(): READ_MEDIA_IMAGES");
+    }
+
+    if (ActivityCompat.checkSelfPermission(
             this, Manifest.permission.CAMERA) != PERMISSION_GRANTED) {
       permissions.add(android.Manifest.permission.CAMERA);
     } else {
@@ -386,8 +429,6 @@ public class basic extends AppCompatActivity
             1337
                                      );
   }
-
-
 
   private void remove_overlays()
   {
@@ -642,7 +683,7 @@ public class basic extends AppCompatActivity
                       note = "note not found";
                     } else {
                       note = item_json.get(7).getAsString();
-                      note = note.equals("") ? note = "note not found" : note;
+                      note = note.isEmpty() ? note = "note not found" : note;
                     }
 
                     license = item_json.get(8).getAsString();

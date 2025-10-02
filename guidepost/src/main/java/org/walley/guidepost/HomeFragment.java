@@ -11,7 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import org.osmdroid.config.Configuration;
+import org.osmdroid.config.IConfigurationProvider;
 import org.walley.guidepost.databinding.FragmentHomeBinding;
+
+import static org.osmdroid.tileprovider.util.StorageUtils.getStorage;
 
 public class HomeFragment extends Fragment
 {
@@ -28,6 +32,11 @@ public class HomeFragment extends Fragment
 
     binding = FragmentHomeBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
+
+    IConfigurationProvider provider = Configuration.getInstance();
+    provider.setUserAgentValue(BuildConfig.APPLICATION_ID);
+    provider.setOsmdroidBasePath(getStorage());
+    provider.setOsmdroidTileCache(getStorage());
     return root;
   }
 
