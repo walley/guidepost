@@ -1,49 +1,32 @@
-package org.walley.guidepost;
+package org.walley.guidepost
 
-import android.os.Bundle;
-import android.os.StrictMode;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.os.Bundle
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import org.walley.guidepost.databinding.FragmentHomeBinding
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+class f_map : Fragment() {
 
-import org.osmdroid.config.Configuration;
-import org.osmdroid.config.IConfigurationProvider;
-import org.walley.guidepost.databinding.FragmentHomeBinding;
+  private var binding: FragmentHomeBinding? = null
 
-import static org.osmdroid.tileprovider.util.StorageUtils.getStorage;
-
-public class HomeFragment extends Fragment
-{
-
-  private FragmentHomeBinding binding;
-
-  public View onCreateView(@NonNull LayoutInflater inflater,
-                           ViewGroup container, Bundle savedInstanceState
-                          )
-  {
-
-    StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                                       .build());
-
-    binding = FragmentHomeBinding.inflate(inflater, container, false);
-    View root = binding.getRoot();
-
-    IConfigurationProvider provider = Configuration.getInstance();
-    provider.setUserAgentValue(BuildConfig.APPLICATION_ID);
-    provider.setOsmdroidBasePath(getStorage());
-    provider.setOsmdroidTileCache(getStorage());
-    return root;
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?, savedInstanceState: Bundle?
+  ): View? {
+    StrictMode.setThreadPolicy(
+      ThreadPolicy.Builder()
+        .build()
+    )
+    binding = FragmentHomeBinding.inflate(inflater, container, false)
+    return binding!!.getRoot()
   }
 
-  @Override
-  public void onDestroyView()
-  {
-    super.onDestroyView();
-    binding = null;
+  override fun onDestroyView() {
+    super.onDestroyView()
+    binding = null
   }
 }

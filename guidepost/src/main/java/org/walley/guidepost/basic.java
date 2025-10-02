@@ -49,6 +49,7 @@ import com.koushikdutta.ion.Ion;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.config.IConfigurationProvider;
 import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
@@ -86,6 +87,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static org.osmdroid.tileprovider.util.StorageUtils.getStorage;
 
 public class basic extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -129,6 +131,11 @@ public class basic extends AppCompatActivity
     navigationView = binding.navView;
 
     WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+    IConfigurationProvider provider = Configuration.getInstance();
+    provider.setUserAgentValue(BuildConfig.APPLICATION_ID);
+    provider.setOsmdroidBasePath(getStorage());
+    provider.setOsmdroidTileCache(getStorage());
 
     setContentView(binding.getRoot());
 

@@ -13,7 +13,7 @@
 
   <fragment
     android:id="@+id/nav_home"
-    android:name="org.walley.guidepost.HomeFragment"
+    android:name="org.walley.guidepost.f_map"
     android:label="@string/menu_map"
     tools:layout="@layout/fragment_home" />
 
