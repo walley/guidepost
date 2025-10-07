@@ -94,7 +94,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /*START OF CLASS***************************************************************/
 public class share extends AppCompatActivity
-/*START OF CLASS***************************************************************/
+        /*START OF CLASS***************************************************************/
 {
 
   public static final String TAG = "GP-SHARE";
@@ -183,7 +183,7 @@ public class share extends AppCompatActivity
   /******************************************************************************/
   {
     /* this need referrer:(
-    String mapic_url = "http://stgoogaticmap.openstreetmap.de/staticmap.php?center="
+    String mapic_url = "http://staticmap.openstreetmap.de/staticmap.php?center="
                        + lat_coord.getText()
                        + ","
                        + lon_coord.getText()
@@ -194,7 +194,7 @@ public class share extends AppCompatActivity
                        + ","
                        + lon_coord.getText()
                        + ",lightblue1";
-*/
+
     String mapic_url = ""
             + "https://open.mapquestapi.com/staticmap/v4/getmap?"
             + "key=Fmjtd%7Cluu22qu1nu%2Cbw%3Do5-h6b2h&"
@@ -208,8 +208,21 @@ public class share extends AppCompatActivity
             + lat_coord.getText()
             + ","
             + lon_coord.getText();
+*/
 
-    Log.i(TAG, "place_map:" + mapic_url);
+//https://api.mapbox.com/styles/v1/walley/cjacf81qm49ck2rt916ixntrq/static/17,49,5/600x400?access_token=pk.eyJ1Ijoid2FsbGV5IiwiYSI6ImNpZ3hia3l0czAwYnZ2cWtybXlkYnpubnMifQ.PgUAIu76fxynDlB9LkA0FA
+
+    String mapic_url = ""
+            + "https://api.mapbox.com/styles/v1/walley/cjacf81qm49ck2rt916ixntrq/static/"
+            + lon_coord.getText()
+            + ","
+            + lat_coord.getText()
+            + ","
+            + "15"
+            + "/200x200?access_token=pk.eyJ1Ijoid2FsbGV5IiwiYSI6ImNpZ3hia3l0czAwYnZ2cWtybXlkYnpubnMifQ.PgUAIu76fxynDlB9LkA0FA";
+
+
+    Log.e(TAG, "place_map:" + mapic_url);
 
 //NOTE nice thing that does the same https://square.github.io/picasso/
     Ion.with(image_map)
@@ -653,7 +666,8 @@ public class share extends AppCompatActivity
 
                         share.this.finish();
                       }
-                    })
+                    }
+                              )
             .show();
   }
 
@@ -664,12 +678,14 @@ public class share extends AppCompatActivity
     new AlertDialog.Builder(this)
             .setMessage(getResources().getString(R.string.wrongcoords))
             .setCancelable(false)
-            .setPositiveButton("OK", new DialogInterface.OnClickListener()
-            {
-              public void onClick(DialogInterface dialog, int id)
-              {
-              }
-            })
+            .setPositiveButton(
+                    "OK", new DialogInterface.OnClickListener()
+                    {
+                      public void onClick(DialogInterface dialog, int id)
+                      {
+                      }
+                    }
+                              )
             .show();
   }
 
@@ -680,12 +696,14 @@ public class share extends AppCompatActivity
     new AlertDialog.Builder(this)
             .setMessage(s)
             .setCancelable(false)
-            .setPositiveButton("OK", new DialogInterface.OnClickListener()
-            {
-              public void onClick(DialogInterface dialog, int id)
-              {
-              }
-            })
+            .setPositiveButton(
+                    "OK", new DialogInterface.OnClickListener()
+                    {
+                      public void onClick(DialogInterface dialog, int id)
+                      {
+                      }
+                    }
+                              )
             .show();
   }
 
