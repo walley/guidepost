@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 
+def kpFile = rootProject.file("local.properties")
+def kp = new Properties()
+kp.load(new FileInputStream(kpFile))
+
 android {
 compileSdk 36
     defaultConfig {
@@ -8,8 +12,8 @@ compileSdk 36
         minSdk 21
         targetSdk 36
         multiDexEnabled true
-        versionCode 29
-        versionName '1.25'
+        versionCode 30
+        versionName '1.26'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -19,6 +23,10 @@ compileSdk 36
         release {
 
             Properties properties = new Properties()
+            storeFile file('/home/walley/android/keys/androidkey/my-release-key2.keystore')
+            keyAlias 'walley'
+            storePassword kp['store']
+            keyPassword kp['key']
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
         }
     }
@@ -65,7 +73,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation 'com.koushikdutta.ion:ion:3.1.0'
     implementation 'org.osmdroid:osmdroid-android:6.1.20'
-    implementation 'com.squareup.okhttp3:okhttp:5.1.0'
+    implementation 'com.squareup.okhttp3:okhttp:5.2.0'
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
     implementation 'androidx.preference:preference:1.2.1'
     implementation 'androidx.exifinterface:exifinterface:1.4.1'

@@ -440,9 +440,6 @@ public class share extends AppCompatActivity
 
     try {
       double[] x;
-//      if (exif.getLatLong(output)) {
-//        float lat = output[0];
-//        float lon = output[1];
       if (exif.getLatLong() != null) {
         x = exif.getLatLong();
         double lat = x[0];
