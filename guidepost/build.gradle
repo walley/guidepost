@@ -23,7 +23,7 @@ compileSdk 36
         release {
 
             Properties properties = new Properties()
-            storeFile file('/home/walley/android/keys/androidkey/my-release-key2.keystore')
+            storeFile file('/home/walley/android/keys/androidkey/my-release-key.keystore')
             keyAlias 'walley'
             storePassword kp['store']
             keyPassword kp['key']
@@ -33,6 +33,7 @@ compileSdk 36
     buildFeatures {
         dataBinding true
         viewBinding true
+        buildConfig true
     }
     dataBinding {
         enabled true
@@ -40,6 +41,7 @@ compileSdk 36
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
         }
     }
     packagingOptions {
